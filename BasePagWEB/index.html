@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="css/style.css">
+  <meta charset="UTF-8">
+  <title>Registrazione</title>
+</head>
+<body>
+<header>
+  <div class="logo">
+    <h2>Logo</h2>
+  </div>
+</header>
+ <div class="container">                  <!--action="#" specifica l'URL o la destinazione a cui il form invierà i dati una volta che viene sottomesso. In questo caso, il valore # indica che il form invierà i dati a se stesso-->
+   <form action="#" method="post" >       <!-- method definisce il metodo HTTP che verrà utilizzato per inviare i dati del form al server-->
+     <h1>Registrazione</h1>
+     <div class="content">
+       <div class="input-box">
+         <label for="name">Nome</label>
+         <input type="text" placeholder="inserisci il nome" id="name" required>
+       </div>
+       <div class="input-box">
+         <label for="cognome">Cognome</label>
+         <input type="text" placeholder="inserisci il cognome" id="cognome" required>
+       </div>
+       <div class="input-box">
+         <label for="email">Email</label>
+         <input type="text" placeholder="inserisci l'email" id="email" required>
+       </div>
+       <div class="input-box">
+         <label for="telefono">Telefono</label>
+         <input type="text" placeholder="inserisci il numero di telefono" id="telefono" required>
+       </div>
+       <div class="input-box">
+         <label for="pass">Password</label>
+         <input type="password" placeholder="inserisci la password" id="pass" required>
+       </div>
+       <div class="input-box">
+         <label for="ConfPass">Conferma password</label>
+         <input type="password" placeholder="conferma la password" id="ConfPass" required>
+       </div>
+       <span class="gender-title">Data di nascita</span>
+       <div class="eta">
+         <select name="giorno">
+           <option value="Giorno">Giorno</option>
+           <option value="1">1</option>
+         </select>
+         <select name="mese">
+           <option value="Mese">Mese</option>
+           <option value="Gennaio">Gennaio</option>
+         </select>
+         <select name="anno">
+           <option value="Anno">Anno</option>
+           <option value="2000">2000</option>
+         </select>
+       </div>
+       <span class="gender-title">Sesso</span>
+       <div class="gender-choice">
+         <input type="radio" name="gender" id="maschio">
+         <label for="maschio">Maschio</label>
+         <input type="radio" name="gender" id="femmina">
+         <label for="femmina">Femmina</label>
+         <input type="radio" name="gender" id="altro">
+         <label for="altro">Altro</label>
+       </div>
+
+         <button class="button" type="submit">Registrati</button>
+     </div>
+   </form>
+ </div>
+</body>
+</html>
