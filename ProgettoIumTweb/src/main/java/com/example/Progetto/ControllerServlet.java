@@ -6,23 +6,24 @@ import java.io.IOException;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+/*-----------------------PROVA (DA MODIFICARE)-----------------------*/
+@WebServlet(name = "ControllerServlet", value = "/controller-servlet")
 public class ControllerServlet extends HttpServlet {
+
     private Model model = null;
 
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
-        ServletContext ctx= getServletContext();
-        String url = ctx.getInitParameter("DB-URL");
-        String user = ctx.getInitParameter("user");
-        String pwd = ctx.getInitParameter("pwd");
-        // Notare la stampa nel log del Server ??
-        System.out.println("URL del database: " + url);
-        model = new Model(url, user, pwd);
+        // Recupera il model del DAO dal ServletContext
+        ServletContext ctx = getServletContext();
+        this.model = (Model) ctx.getAttribute("DAO");
+
     }
 
     @Override

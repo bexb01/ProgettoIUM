@@ -140,6 +140,31 @@ public class Model {
         }
     }
 
+    public String checkUtente(String email, String pswd) {
+        try (Connection conn = DriverManager.getConnection(url1, user, password)) {
+            String query = "SELECT amministratore FROM UTENTE WHERE attivo = ? AND email = ? AND password= ?";
+            try (PreparedStatement ps = conn.prepareStatement(query)) {
+                ps.setBoolean(1, true);
+                ps.setString(2, email);
+                ps.setString(3, pswd);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                         boolean ruolo = rs.getBoolean("AMMINISTRATORE"); // true se amministratore
+                        if(ruolo)
+                            return "amministratore";
+                        else
+                            return "utente";
+                    } else {
+                        return "sconosciuto";
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Errore durante l'interazione con il database (checkutente): " + e.getMessage());
+        }
+        return "ritenta";   // connection failed
+    }
+
     public void deleteUtente(int id) {
         try (Connection conn = DriverManager.getConnection(url1, user, password)) {
             String query = "UPDATE UTENTE SET attivo = ? WHERE id_utente = ?";
