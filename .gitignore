@@ -15,3 +15,5 @@ ProgettoIumTweb/target/classes/com/example/Progetto/PrenotazioniServlet.class
 ProgettoIumTweb/target/classes/com/example/Progetto/ServletAutentica.class
 ProgettoIumTweb/target/classes/DAO/Model.class
 ProgettoIumTweb/demo.iml
+.idea/compiler.xml
+.idea/artifacts/demo_war_exploded.xml
