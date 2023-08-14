@@ -83,10 +83,10 @@ public class ControllerServlet extends HttpServlet {
                     model.insertUtente("Marco","Carta", "marcocarta@gmail.com", "ihatemyself", true); //PRENDI DATI DA FORM E PASSALI QUI
                     break;
                 case "delete corso":
-                    model.deleteCorso(1); //PRENDI DATI DA FORM E PASSALI QUI
+                    model.deleteCorso("Programmazione"); //PRENDI DATI DA FORM E PASSALI QUI
                     break;
                 case "delete docente":
-                    model.deleteDocente(1); //PRENDI DATI DA FORM E PASSALI QUI
+                    model.deleteDocente("Marco", "Carta"); //PRENDI DATI DA FORM E PASSALI QUI
                     break;
                 case "delete utente":
                     model.deleteUtente(1);

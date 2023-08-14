@@ -3,18 +3,18 @@ package DAO;
 public class Prenotazione {
     private int id_prenotazione;
     private int id_utente;
-    private int id_corso;
-    private int id_docente;
+    //id docente_corso---------------
+    private int id_corso_docente;
+    //--------------------------------
     private String data;
     private int ora;
     private String stato;
 
 
-    public Prenotazione(int id_prenotazione, int id_utente, int id_corso, int id_docente, String data, int ora, String stato) {
+    public Prenotazione(int id_prenotazione, int id_utente, int id_corso_docente, String data, int ora, String stato) {
         this.id_prenotazione = id_prenotazione;
         this.id_utente = id_utente;
-        this.id_corso = id_corso;
-        this.id_docente = id_docente;
+        this.id_corso_docente = id_corso_docente;
         this.data = data;
         this.ora = ora;
         this.stato = stato;
@@ -29,11 +29,7 @@ public class Prenotazione {
     }
 
     public int getId_corso() {
-        return id_corso;
-    }
-
-    public int getId_docente() {
-        return id_docente;
+        return id_corso_docente;
     }
 
     public String getData() {
@@ -57,8 +53,7 @@ public class Prenotazione {
         return "Prenotazione{" +
                 "id_prenotazione=" + id_prenotazione +
                 ", id_utente=" + id_utente +
-                ", id_corso=" + id_corso +
-                ", id_docente=" + id_docente +
+                ", id_corso=" + id_corso_docente +
                 ", data='" + data + '\'' +
                 ", ora=" + ora +
                 ", stato='" + stato + '\'' +

@@ -7,7 +7,6 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.annotation.*;
 
-/*-----------------------CLASSE DA COLLEGARE A RESTO DEL PROGETTO (UTILE)-----------------------*/
 @WebServlet(name = "ServletDao", value = "/ServletDao", loadOnStartup = 1, asyncSupported = true)
 public class ServletDao extends HttpServlet {
 

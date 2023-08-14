@@ -1,9 +1,12 @@
 package com.example.Progetto;
 
 import DAO.Model;
+import DAO.Utente;
 
 import java.io.*;
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 import javax.servlet.http.*;
 import javax.servlet.annotation.*;
 
@@ -11,7 +14,12 @@ import javax.servlet.annotation.*;
 @WebServlet(name = "loginServlet", value = "/login-servlet")
 public class LoginServlet extends HttpServlet {
 
-    public void init() {
+    private Model model = null;
+
+    public void init(ServletConfig config) throws ServletException {
+        super.init(config);
+        ServletContext ctx = getServletContext();
+        model = (Model) ctx.getAttribute("DAO");
     }
 
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -21,14 +29,14 @@ public class LoginServlet extends HttpServlet {
         HttpSession s = request.getSession();
 
         if (username != null && password!=null){
-            ServletContext ctx = getServletContext();
-            Model model = (Model) ctx.getAttribute("DAO");
-            String ruolo = model.checkUtente(username, password);
-
-            if (!ruolo.equals("ritenta")) {
+            Utente utente = model.getUtente(username, password);
+            if (utente != null) {
                 s.setAttribute("username", username);
-                s.setAttribute("ruolo", ruolo);
-                if (ruolo.equals("amministratore")){
+                if(utente.getAmministratore())
+                    s.setAttribute("ruolo", "amministratore");
+                else
+                    s.setAttribute("ruolo", "utente");
+                if (s.getAttribute("ruolo").equals("amministratore")){
                     // Effettua l'inserimento dei dati del docente
                     //!!!NON è COMPLETO!!!
                     //DOESN'T WORK--------------------------------------------------------------------------
