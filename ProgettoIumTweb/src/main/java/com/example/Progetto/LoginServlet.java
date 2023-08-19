@@ -2,6 +2,8 @@ package com.example.Progetto;
 
 import DAO.Model;
 import DAO.Utente;
+import org.json.JSONObject;
+import utils.JsonUtils;
 
 import java.io.*;
 import javax.servlet.ServletConfig;
@@ -11,7 +13,7 @@ import javax.servlet.http.*;
 import javax.servlet.annotation.*;
 
 /*-----------------------ESEMPIO (Utilizzabile)-----------------------*/
-@WebServlet(name = "loginServlet", value = "/login-servlet")
+@WebServlet(name = "loginServlet", value = "/loginServlet")
 public class LoginServlet extends HttpServlet {
 
     private Model model = null;
@@ -22,10 +24,12 @@ public class LoginServlet extends HttpServlet {
         model = (Model) ctx.getAttribute("DAO");
     }
 
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        String username = request.getParameter("login");
-        String password = request.getParameter("passwd");
+    public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        response.setContentType("application/json");
+        PrintWriter out = response.getWriter();
+        JSONObject jsonObject = JsonUtils.readJson(request);
+        String username = jsonObject.getString("login");
+        String password = jsonObject.getString("passwd");
         HttpSession s = request.getSession();
 
         if (username != null && password!=null){
@@ -39,16 +43,23 @@ public class LoginServlet extends HttpServlet {
                     s.setAttribute("ruolo", "utente");
                 }
                     //----------------------------------------------------------------------------------
-                try (PrintWriter out = response.getWriter()) {
-                    out.println("Welcome back");
-                }
+                out.println("Welcome back");
+                out.flush();
             }else{
                 //di norma 200
                 //fail log in 401 (non autorizzato)
                 response.setStatus(401);
+                out.println("Non sei autorizzato");
+                out.flush();
                 //s.setAttribute("ruolo", "fail");
             }
+        } else {
+            response.setStatus(404);
+            out.println("Parametri mancanti");
+            out.flush();
         }
+
+
 
     }
 
