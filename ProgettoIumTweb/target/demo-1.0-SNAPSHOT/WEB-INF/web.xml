@@ -6,7 +6,7 @@
     <context-param>
         <description>url del database per accesso da applicazione java</description>
         <param-name>DB-URL</param-name>
-        <param-value>jdbc:mysql://localhost:3306/ripetizioni</param-value>
+        <param-value>jdbc:mysql://localhost:3306/progetto</param-value>
     </context-param>
     <context-param>
         <description>account per accedere a DB</description>
@@ -21,4 +21,12 @@
     <session-config>
         <session-timeout> 1800 </session-timeout>
     </session-config>
+    <filter>
+        <filter-name>CorsFilter</filter-name>
+        <filter-class>utils.CORSFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>CorsFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
 </web-app>

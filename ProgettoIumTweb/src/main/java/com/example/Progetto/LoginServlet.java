@@ -32,9 +32,10 @@ public class LoginServlet extends HttpServlet {
             Utente utente = model.getUtente(username, password);
             if (utente != null) {
                 s.setAttribute("username", username);
-                if(utente.getAmministratore())
+                if(utente.getAmministratore()) {
                     s.setAttribute("ruolo", "amministratore");
-                else
+
+                } else
                     s.setAttribute("ruolo", "utente");
                 if (s.getAttribute("ruolo").equals("amministratore")){
                     // Effettua l'inserimento dei dati del docente
@@ -59,8 +60,14 @@ public class LoginServlet extends HttpServlet {
                     }
                     //----------------------------------------------------------------------------------
                 }
+                try (PrintWriter out = response.getWriter()) {
+                    out.println("Welcome back");
+                }
             }else{
-                s.setAttribute("ruolo", "fail");
+                //di norma 200
+                //fail log in 401 (non autorizzato)
+                response.setStatus(401);
+                //s.setAttribute("ruolo", "fail");
             }
         }
         try (PrintWriter out = response.getWriter()) {
