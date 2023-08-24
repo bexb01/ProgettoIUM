@@ -35,7 +35,7 @@ public class ControllerServlet extends HttpServlet {
             switch (action) {
                 case "viewCatalog":
                     // Carica il catalogo delle ripetizioni disponibili e passa alla vista
-                    model.getSlotLiberi();
+                    //model.getSlotLiberi();
                     // ...
                     break;
                 case "viewUserBookings":
@@ -86,7 +86,7 @@ public class ControllerServlet extends HttpServlet {
                     model.deleteCorso("Programmazione"); //PRENDI DATI DA FORM E PASSALI QUI
                     break;
                 case "delete docente":
-                    model.deleteDocente("Marco", "Carta"); //PRENDI DATI DA FORM E PASSALI QUI
+                    //model.deleteDocente("Marco", "Carta"); //PRENDI DATI DA FORM E PASSALI QUI
                     break;
                 case "delete utente":
                     model.deleteUtente(1);

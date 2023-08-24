@@ -10,6 +10,7 @@ import javax.servlet.annotation.*;
 @WebServlet(name = "ServletDao", value = "/ServletDao", loadOnStartup = 1, asyncSupported = true)
 public class ServletDao extends HttpServlet {
 
+    @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
         ServletContext ctx = getServletContext();
@@ -22,12 +23,15 @@ public class ServletDao extends HttpServlet {
         ctx.setAttribute("DAO", model);
     }
 
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
     }
 
-    public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
     }
 
+    @Override
     public void destroy() {
     }
 

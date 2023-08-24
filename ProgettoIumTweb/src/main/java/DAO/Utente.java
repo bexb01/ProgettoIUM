@@ -10,13 +10,12 @@ public class Utente {
     private boolean attivo;
 
 
-    public Utente(int id_utente, String nome, String cognome, String email, String password, boolean amministratore) {
-        this.id_utente = id_utente;
+    public Utente(String nome, String cognome, String email, String password) {
         this.nome = nome;
         this.cognome = cognome;
         this.email = email;
         this.password = password;
-        this.amministratore = amministratore;
+        this.amministratore = false;
         this.attivo = true;
     }
 
@@ -42,6 +41,13 @@ public class Utente {
 
     public boolean getAmministratore() {
         return amministratore;
+    }
+
+    public String getRuolo(){
+        if (getAmministratore())
+            return "amministratore";
+        else
+            return "utente";
     }
 
     public void setAmministratore() {

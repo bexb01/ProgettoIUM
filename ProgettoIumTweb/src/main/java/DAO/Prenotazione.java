@@ -3,9 +3,7 @@ package DAO;
 public class Prenotazione {
     private int id_prenotazione;
     private int id_utente;
-    //id docente_corso---------------
     private int id_corso_docente;
-    //--------------------------------
     private String data;
     private int ora;
     private String stato;
