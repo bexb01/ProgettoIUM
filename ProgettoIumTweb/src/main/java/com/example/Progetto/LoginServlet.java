@@ -32,7 +32,6 @@ public class LoginServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        System.out.println("mannaggia sant antonio");
             processRequest(request, response);
     }
 
@@ -46,25 +45,15 @@ public class LoginServlet extends HttpServlet {
                 case "login":
                     System.out.println(jsonObject);
                     if (!jsonObject.optString("email").isEmpty() && !jsonObject.optString("passwd").isEmpty()) {
-                        System.out.println("1");
                         Utente utente = model.getUtente(jsonObject.getString("email"), jsonObject.getString("passwd"));
-                        System.out.println("2");
                         if (utente != null) {
-                            System.out.println("3");
                             HttpSession s = request.getSession();
-                            System.out.println("4");
                             s.setAttribute("id_utente", utente.getId_utente());
-                            System.out.println("5");
                             s.setAttribute("ruolo", utente.getRuolo());
-                            System.out.println("6");
                             JSONObject r = new JSONObject();
-                            System.out.println("7");
-                            r.put("idUser", utente.getId_utente());
-                            System.out.println("8");
+                            r.put("id_utente", utente.getId_utente());
                             r.put("nome", utente.getNome());
-                            System.out.println("9");
                             r.put("ruolo", utente.getRuolo());
-                            System.out.println("10");
                             r.put("messaggio", "Autenticazione avvenuta con successo");
                             out.println(response);
                             out.flush();
@@ -88,25 +77,25 @@ public class LoginServlet extends HttpServlet {
                     String passwd = jsonObject.optString("passwd");
                     if (!email.isEmpty() && !nome.isEmpty() && !cognome.isEmpty() && passwd.length() >= 6) {
                         Utente utente = new Utente(nome, cognome, email, passwd);
-                        model.insertUtente(utente.getNome(), utente.getCognome(), utente.getEmail(), utente.getPassword(), false);
-                        //chiedere cosa fa in insert utente per tornare oggetto utente AGGIUNGERE IF----------------
-                        HttpSession s = request.getSession();
-                        s.setAttribute("username", utente.getId_utente());
-                        s.setAttribute("ruolo", utente.getRuolo());
-                        JSONObject r = new JSONObject();
-                        r.put("id_utente", utente.getId_utente());
-                        r.put("nome", utente.getNome());
-                        r.put("ruolo", utente.getRuolo());
-                        r.put("messaggio", "Registrazione avvenuta con successo");
-                        out.println(response);
-                        out.flush();//----------------------------------------------------------------------------
-                        //AGGIUNGERE ELSE
-                        /*else {
-                            res.setStatus(500);
-                            out.println("Errore interno al server, ritenta la registrazione più tardi o contatta il supporto");
+                        int id = model.insertUtente(utente.getNome(), utente.getCognome(), utente.getEmail(), utente.getPassword());
+                        if(id > 0){
+                            HttpSession s = request.getSession();
+                            s.setAttribute("username", utente.getId_utente());
+                            s.setAttribute("ruolo", utente.getRuolo());
+                            JSONObject r = new JSONObject();
+                            r.put("id_utente", utente.getId_utente());
+                            r.put("nome", utente.getNome());
+                            r.put("ruolo", utente.getRuolo());
+                            r.put("messaggio", "Registrazione avvenuta con successo");
+                            out.println(response);
+                            out.flush();
+                        } else {
+                            response.setStatus(500);
+                            JSONObject r = new JSONObject();
+                            r.put("messaggio", "Errore interno al server, ritenta la registrazione più tardi o contatta il supporto");
+                            out.println(response);
                             out.flush();
                         }
-                        */
                     } else {
                         response.setStatus(404);
                         out.println("Parametri mancanti");
@@ -116,7 +105,9 @@ public class LoginServlet extends HttpServlet {
                 case "logout":
                     HttpSession s = request.getSession(false);
                     s.invalidate();
-                    out.println("Logout effettuato con successo");
+                    JSONObject r = new JSONObject();
+                    r.put("messaggio", "Logout effettuato con successo");
+                    out.println(response);
                     out.flush();
                     break;
                 default:

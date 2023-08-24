@@ -236,7 +236,7 @@ public class Model {
     }
 
     //da usare quando viene creato un profilo utente da uno studente
-    public synchronized int insertUtente(String nome, String cognome, String email, String pswd, boolean amministratore) {
+    public synchronized int insertUtente(String nome, String cognome, String email, String pswd) {
         try (Connection conn = DriverManager.getConnection(url1, user, password)) {
             String query = "INSERT INTO UTENTE (nome, cognome, email, password, amministratore) VALUES (?, ?, ?, ?, ?)";
             try (PreparedStatement ps = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
@@ -244,7 +244,7 @@ public class Model {
                 ps.setString(2, cognome);
                 ps.setString(3, email);
                 ps.setString(4,  BCrypt.hashpw(pswd, BCrypt.gensalt()));
-                ps.setBoolean(5, amministratore);
+                ps.setBoolean(5, false);
                 int rows = ps.executeUpdate();
                 if (rows > 0) {
                     ResultSet rs = ps.getGeneratedKeys();
@@ -254,7 +254,7 @@ public class Model {
                         return 0;
                     }
                 }
-                System.out.println("Inserito utente " + nome + " " + cognome + " con amministratore " + amministratore + " con successo");
+                System.out.println("Inserito utente " + nome + " " + cognome + " con successo");
             }
         } catch (SQLException e) {
             System.out.println("Errore durante l'inserimento dell'utente: " + e.getMessage());
@@ -263,34 +263,23 @@ public class Model {
     }
 
     public Utente getUtente(String email, String pswd) {
-        System.out.println("parte");
         try (Connection conn = DriverManager.getConnection(url1, user, password)) {
-            System.out.println("lol");
             String query = "SELECT * FROM UTENTE WHERE attivo = true AND email = ?";
-            System.out.println("wtf");
             try (PreparedStatement ps = conn.prepareStatement(query)) {
-                System.out.println("sdsdsab");
                 ps.setString(1, email);
                 try (ResultSet rs = ps.executeQuery()) {
-                    System.out.println("1");
                     if (rs.next()) {
-                        System.out.println("2");
                         String passw1= rs.getString("password");
-                        System.out.println("3");
                         if(BCrypt.checkpw(pswd,passw1)){
-                            System.out.println("4");
                             Utente u = new Utente(rs.getString("nome"),
                                     rs.getString("cognome"),
                                     rs.getString("email"),
                                     rs.getString("password"));
-                            System.out.println("5");
                             return u;
                         }else{
-                            System.out.println("a");
                             return null;    // Password non corrisponde
                         }
                     } else {
-                        System.out.println("b");
                         return null;    // Utente non trovato
                     }
                 }

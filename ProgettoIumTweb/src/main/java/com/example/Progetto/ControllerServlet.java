@@ -75,12 +75,12 @@ public class ControllerServlet extends HttpServlet {
                     //insersci associazione nella tabella corso_docente
                     break;
                 case "inserisci docente":
-                    model.insertUtente("Federico","Lucia", "fedez@gmail.com", "ihatecodacons", false);  //PRENDI DATI DA FORM E PASSALI QUI
+                    model.insertUtente("Federico","Lucia", "fedez@gmail.com", "ihatecodacons");  //PRENDI DATI DA FORM E PASSALI QUI
                     model.insertDocente("Federico","Lucia"); //PRENDI DATI DA FORM E PASSALI QUI
                     //insertDocenteCorso()  //PRENDI DATI DA FORM E PASSALI QUI
                     break;
                 case "inserisci utente":
-                    model.insertUtente("Marco","Carta", "marcocarta@gmail.com", "ihatemyself", true); //PRENDI DATI DA FORM E PASSALI QUI
+                    model.insertUtente("Marco","Carta", "marcocarta@gmail.com", "ihatemyself"); //PRENDI DATI DA FORM E PASSALI QUI
                     break;
                 case "delete corso":
                     model.deleteCorso("Programmazione"); //PRENDI DATI DA FORM E PASSALI QUI

@@ -46,7 +46,8 @@ public class CorsoDocenteServlet extends HttpServlet {
             out.println("Ecco la lisa docenti disponibili");
             out.flush();
             //else
-        } else if(ruolo.equals("amministratore")) {
+        }   //lista corsi
+        else if(ruolo.equals("amministratore")) {
             switch (action) {
                 case "insert docente":
                     if (!jsonObject.optString("nome").isEmpty() && !jsonObject.optString("cognome").isEmpty()) {

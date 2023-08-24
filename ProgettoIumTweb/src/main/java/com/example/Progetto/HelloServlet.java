@@ -43,8 +43,8 @@ public class HelloServlet extends HttpServlet {
         }
          */
         response.setContentType("text/html");
-        model.insertUtente("Beatrice", "Matera", "materabeatrice@unito.it", "abracadabra", true);
-        model.insertUtente("Arlo", "Merlo", "acab@unito.it", "brrrriz", false);
+        model.insertUtente("Beatrice", "Matera", "materabeatrice@unito.it", "abracadabra");     //amministratore
+        model.insertUtente("Arlo", "Merlo", "acab@unito.it", "brrrriz");    //utente
         try (PrintWriter out = response.getWriter()) {
             out.println("<html><body>");
             out.println("<h1> Risultato </h1>");
