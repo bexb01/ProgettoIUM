@@ -113,8 +113,8 @@ public class CorsoDocenteServlet extends HttpServlet {
                         break;
                     case "insert corso":
                         System.out.println(jsonObject);
-                        if (!jsonObject.optString("titolo corso").isEmpty()) {
-                            int idCorso = model.insertCorso(jsonObject.getString("titolo corso"));
+                        if (!jsonObject.optString("corso").isEmpty()) {
+                            int idCorso = model.insertCorso(jsonObject.getString("corso"));
                             if (idCorso > 0) {
                                 r.put("messaggio", "Corso inserito con successo");
                             } else {
@@ -128,8 +128,8 @@ public class CorsoDocenteServlet extends HttpServlet {
                         break;
                     case "delete corso":
                         System.out.println(jsonObject);
-                        if (!jsonObject.optString("titolo corso").isEmpty()) {
-                            int idCorso = model.deleteCorso(jsonObject.getString("titolo corso"));
+                        if (!jsonObject.optString("corso").isEmpty()) {
+                            int idCorso = model.deleteCorso(jsonObject.getString("corso"));
                             if (idCorso > 0) {
                                 r.put("messaggio", "Corso rimosso con successo");
                             } else {
@@ -143,8 +143,8 @@ public class CorsoDocenteServlet extends HttpServlet {
                         break;
                     case "insert corso-docente":
                         System.out.println(jsonObject);
-                        if (!jsonObject.optString("nome").isEmpty() && !jsonObject.optString("cognome").isEmpty() && !jsonObject.optString("titolo corso").isEmpty()) {
-                            int idCorsoDocente = model.insertCorsoDocente(jsonObject.getString("nome"), jsonObject.getString("cognome"), jsonObject.getString("titolo corso"));
+                        if (!jsonObject.optString("nome").isEmpty() && !jsonObject.optString("cognome").isEmpty() && !jsonObject.optString("corso").isEmpty()) {
+                            int idCorsoDocente = model.insertCorsoDocente(jsonObject.getString("nome"), jsonObject.getString("cognome"), jsonObject.getString("corso"));
                             if (idCorsoDocente > 0) {
                                 r.put("messaggio", "Associazione corso-docente inserito con successo");
                             } else {
@@ -158,8 +158,8 @@ public class CorsoDocenteServlet extends HttpServlet {
                         break;
                     case "delete corso-docente":
                         System.out.println(jsonObject);
-                        if (!jsonObject.optString("nome").isEmpty() && !jsonObject.optString("cognome").isEmpty() && !jsonObject.optString("titolo corso").isEmpty()) {
-                            int idCorsoDocente = model.deleteCorsoDocente(jsonObject.getString("nome"), jsonObject.getString("cognome"), jsonObject.getString("titolo corso"));
+                        if (!jsonObject.optString("nome").isEmpty() && !jsonObject.optString("cognome").isEmpty() && !jsonObject.optString("corso").isEmpty()) {
+                            int idCorsoDocente = model.deleteCorsoDocente(jsonObject.getString("nome"), jsonObject.getString("cognome"), jsonObject.getString("corso"));
                             if (idCorsoDocente > 0) {
                                 r.put("messaggio", "Associazione corso-docente eliminata con successo");
                             } else {
