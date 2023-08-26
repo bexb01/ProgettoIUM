@@ -26,7 +26,7 @@ public class Prenotazione {
         return id_utente;
     }
 
-    public int getId_corso() {
+    public int getId_corso_docente() {
         return id_corso_docente;
     }
 

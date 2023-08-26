@@ -14,6 +14,7 @@ import javax.servlet.annotation.*;
 public class HelloServlet extends HttpServlet {
     private Model model = null;
 
+    @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
         ServletContext ctx= getServletContext();
@@ -24,7 +25,8 @@ public class HelloServlet extends HttpServlet {
         model = new Model(url, user, pwd);
     }
 
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         /*
         response.setContentType("text/html");
         try (PrintWriter out = response.getWriter()) {
@@ -43,8 +45,8 @@ public class HelloServlet extends HttpServlet {
         }
          */
         response.setContentType("text/html");
-        model.insertUtente("Beatrice", "Matera", "materabeatrice@unito.it", "abracadabra");     //amministratore
-        model.insertUtente("Arlo", "Merlo", "acab@unito.it", "brrrriz");    //utente
+        model.insertUtente( "Beatrice", "Matera", "materabeatrice@unito.it", "abracadabra");     //amministratore
+        model.insertUtente( "Arlo", "Merlo", "acab@unito.it", "brrrriz");    //utente
         try (PrintWriter out = response.getWriter()) {
             out.println("<html><body>");
             out.println("<h1> Risultato </h1>");
@@ -53,7 +55,8 @@ public class HelloServlet extends HttpServlet {
         }
     }
 
-    public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException  {
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException  {
         //CONTROLLARE CONSISTENZA DI QUELLO CHE ARRIVA
         //DATI UTENTE: con vue mandati oggetti json che sono spacchettati lato server
         //controlli per assicurarsi che le azioni siano eseguite in maniera adatta

@@ -10,7 +10,8 @@ public class Utente {
     private boolean attivo;
 
 
-    public Utente(String nome, String cognome, String email, String password) {
+    public Utente(int id_utente, String nome, String cognome, String email, String password) {
+        this.id_utente = id_utente;
         this.nome = nome;
         this.cognome = cognome;
         this.email = email;
@@ -47,7 +48,7 @@ public class Utente {
         if (getAmministratore())
             return "amministratore";
         else
-            return "utente";
+            return "cliente";
     }
 
     public void setAmministratore() {
