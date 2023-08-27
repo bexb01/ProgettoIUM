@@ -1,19 +1,11 @@
+# File generati automaticamente
+*.war
+*.class
+/demo.iml
 
-*.war
-*.war
-*.war
-*.class
-*.class
-*.class
-ProgettoIumTweb/target/demo-1.0-SNAPSHOT/index.html
-ProgettoIumTweb/target/demo-1.0-SNAPSHOT/login.html
-ProgettoIumTweb/target/demo-1.0-SNAPSHOT/index.html
-ProgettoIumTweb/target/demo-1.0-SNAPSHOT/WEB-INF/web.xml
-ProgettoIumTweb/target/classes/com/example/Progetto/ControllerServlet.class
-ProgettoIumTweb/target/classes/com/example/Progetto/HelloServlet.class
-ProgettoIumTweb/target/classes/com/example/Progetto/PrenotazioniServlet.class
-ProgettoIumTweb/target/classes/com/example/Progetto/ServletAutentica.class
-ProgettoIumTweb/target/classes/DAO/Model.class
-ProgettoIumTweb/demo.iml
-.idea/compiler.xml
-.idea/artifacts/demo_war_exploded.xml
+# Cartelle generate automaticamente
+/ProgettoIumTweb/target/
+
+# File specifici di IntelliJ IDEA
+.idea/
+*.xml
