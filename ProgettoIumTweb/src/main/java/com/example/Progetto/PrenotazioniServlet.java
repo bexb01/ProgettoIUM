@@ -13,6 +13,7 @@ import javax.servlet.annotation.*;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Date;
 
 @WebServlet(name = "PrenotazioniServlet", value = "/PrenotazioniServlet")
 public class PrenotazioniServlet extends HttpServlet {
@@ -51,8 +52,9 @@ public class PrenotazioniServlet extends HttpServlet {
                     switch (action) {
                         case "prenota": //-->solo cliente
                             System.out.println(jsonObject);
-                            if (jsonObject.has("id_utente") && jsonObject.has("id_corso_docente") && !jsonObject.optString("data").isEmpty() && jsonObject.has("ora")) {
-                                int id_prenotazione = model.setPrenotazione(jsonObject.getInt("id_utente"), jsonObject.getInt("id_corso_docente"), jsonObject.getString("data"), jsonObject.getInt("ora"));    //USARE getAttribute() o simili
+                            if (jsonObject.has("id_utente") && jsonObject.has("id_corso_docente") && jsonObject.has("data") && jsonObject.has("ora")) {
+                                int id_prenotazione = model.setPrenotazione(jsonObject.getInt("id_utente"), jsonObject.getInt("id_corso_docente"),  java.sql.Date.valueOf("2023-08-27") ,jsonObject.getInt("ora"));
+                                //jsonObject.getString("data"),
                                 if(id_prenotazione > 0){
                                     r.put("messaggio", "Prenotazione effettuata con successo");
                                 }else{

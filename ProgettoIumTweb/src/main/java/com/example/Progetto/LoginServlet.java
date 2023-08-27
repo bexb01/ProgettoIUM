@@ -82,6 +82,7 @@ public class LoginServlet extends HttpServlet {
                             r.put("ruolo", utente.getRuolo());
                             r.put("messaggio", "Registrazione avvenuta con successo");
                         } else {
+                            //ERRORE INTERNO RIPROVA PIù TARDI O CONTATTA IL SUPPORTO
                             response.setStatus(500);
                             r.put("messaggio", validationResult.getErrorMessage());
                         }

@@ -182,8 +182,12 @@ public class Model {
                 int rowsAffected = ps.executeUpdate();
                 if (rowsAffected > 0) {
                     ResultSet rs = ps.getGeneratedKeys();
-                    System.out.println("Inserita associazione docente " + nomeDocente + " " + cognomeDocente + " e corso " + corso + " con successo");
-                    return (int) rs.getLong(1);
+                    if(rs.next()) {
+                        System.out.println("Inserita associazione docente " + nomeDocente + " " + cognomeDocente + " e corso " + corso + " con successo");
+                        return (int) rs.getLong(1);
+                    }else{
+                        return 0;
+                    }
                 } else {
                     System.out.println("Associazione non creata, docente o corso non trovato.");
                     return 0;
@@ -286,13 +290,13 @@ public class Model {
                 ps.setString(2, cognome);
                 ps.setString(3, email);
                 ps.setString(4, BCrypt.hashpw(pswd, BCrypt.gensalt()));
-                ps.setBoolean(5, false);
+                ps.setBoolean(5, true);
                 int rows = ps.executeUpdate();
                 if (rows > 0) {
                     ResultSet rs = ps.getGeneratedKeys();
                     if (rs.next()) {
                         int userId = rs.getInt(1);
-                        Utente newUser = new Utente(userId, nome, cognome, email, pswd);
+                        Utente newUser = new Utente(userId, nome, cognome, email, pswd, true);
                         return new UserValidationResult(newUser, null); // No error
                     } else {
                         return new UserValidationResult(null, "Errore durante la query per l'inserimento dell'utente");
@@ -318,19 +322,20 @@ public class Model {
                                     rs.getString("nome"),
                                     rs.getString("cognome"),
                                     rs.getString("email"),
-                                    rs.getString("password"));
+                                    rs.getString("password"),
+                                    rs.getBoolean("amministratore"));
                             return new UserValidationResult(u, null); // No error
                         } else {
-                            return new UserValidationResult(null, "Password errata");
+                            return new UserValidationResult(null, "Password o email errata");
                         }
                     } else {
-                        return new UserValidationResult(null, "Utente non trovato");
+                        return new UserValidationResult(null, "Password o email errata");
                     }
                 }
             }
         } catch (SQLException e) {
             System.out.println("Errore durante l'interazione con il database per la ricerca utente: " + e.getMessage());
-            return new UserValidationResult(null, "Errore durante l'interazione con il database");
+            return new UserValidationResult(null, "Errore durante l'interazione con il database, ritenta più tardi");
         }
     }
 
@@ -355,33 +360,6 @@ public class Model {
         }
     }
 
-
-    //oppure passi lista di prenotazioni effettuate e cancelli front end quelle che ti vengono passate
-    //CONTROLLA-----------------------------------------------------------------------------------------------------------
-    public List<Integer> getAvailableSlotsForActiveDocenti() {
-        List<Integer> availableSlots = new ArrayList<>();
-        try (Connection conn = DriverManager.getConnection(url1, user, password)) {
-            String query = "SELECT DISTINCT p.data, p.ora " +
-                    "FROM corso_docente cd " +
-                    "JOIN docente d ON cd.id_docente = d.id_docente " +
-                    "JOIN corso c ON cd.id_corso = c.id_corso " +
-                    "LEFT JOIN prenotazioni p ON cd.id_corso_docente = p.id_corso_docente " +
-                    "WHERE d.attivo = ? AND p.id_prenotazione IS NULL";
-            try (PreparedStatement ps = conn.prepareStatement(query)) {
-                ps.setBoolean(1, true);
-                try (ResultSet rs = ps.executeQuery()) {
-                    while (rs.next()) {
-                        int ora = rs.getInt("ora");
-                        availableSlots.add(ora);
-                    }
-                    return availableSlots;
-                }
-            }
-        } catch (SQLException e) {
-            return null;
-        }
-    }
-//----------------------------------------------------------------------------------------------------------------------------
     public List<Prenotazione> getListaPrenotazioni() {
         List<Prenotazione> prenotazioni = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(url1, user, password)) {
@@ -392,7 +370,7 @@ public class Model {
                     Prenotazione p = new Prenotazione(rs.getInt("id_prenotazione"),
                             rs.getInt("id_utente"),
                             rs.getInt("id_corso_docente"),
-                            rs.getString("data"),
+                            rs.getDate("data"),
                             rs.getInt("ora"),
                             rs.getString("stato"));
                     prenotazioni.add(p);
@@ -417,7 +395,7 @@ public class Model {
                     Prenotazione prenotazione = new Prenotazione(rs.getInt("id_prenotazione"),
                             rs.getInt("id_utente"),
                             rs.getInt("id_corso_docente"),
-                            rs.getString("data"),
+                            rs.getDate("data"),
                             rs.getInt("ora"),
                             rs.getString("stato"));
                     prenotazioni.add(prenotazione);
@@ -431,48 +409,46 @@ public class Model {
         }
     }
 
-    //----------------------------------------------------------------------------------------------------------------------------------
-    public List<Prenotazione> getListaPrenotazioniDocente(){
+    public List<Prenotazione> getListaPrenotazioniDocente(int id){
         List<Prenotazione> prenotazioni = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(url1, user, password)) {
-            String query = "SELECT p.* " +
-                    "FROM corso_docente cd " +
-                    "JOIN docente d ON cd.id_docente = d.id_docente " +
-                    "JOIN corso c ON cd.id_corso = c.id_corso " +
-                    "LEFT JOIN prenotazioni p ON cd.id_corso_docente = p.id_corso_docente " +
-                    "WHERE d.attivo = ?";
+            String query = "SELECT p.*\n" +
+                    "FROM corso_docente cd\n" +
+                    "JOIN docente d ON cd.id_docente = d.id_docente\n" +
+                    "JOIN corso c ON cd.id_corso = c.id_corso\n" +
+                    "LEFT JOIN prenotazioni p ON cd.id_corso_docente = p.id_corso_docente\n" +
+                    "WHERE d.attivo = ? AND p.stato = 'attiva' AND d.id_docente = ?;";
 
             try (PreparedStatement ps = conn.prepareStatement(query)) {
                 ps.setBoolean(1, true);
-
+                ps.setInt(2, id);
                 try (ResultSet rs = ps.executeQuery()) {
                     while (rs.next()) {
                         Prenotazione prenotazione = new Prenotazione(rs.getInt("id_prenotazione"),
                                 rs.getInt("id_utente"),
                                 rs.getInt("id_corso_docente"),
-                                rs.getString("data"),
+                                rs.getDate("data"),
                                 rs.getInt("ora"),
                                 rs.getString("stato"));
                         prenotazioni.add(prenotazione);
                     }
+                    System.out.println("Lista prenotazioni del docente recuperata con successo.");
                     return prenotazioni;
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.out.println("Errore durante il recupero della lista prenotazioni del docente: " + e.getMessage());
+            return null;
         }
-        return null;
     }
-//---------------------------------------------------------------------------------------------------------------------------------------
 
-    //check docente attivo
-    public synchronized int setPrenotazione(int idUtente, int idCorsoDocente, String data, int ora) {
+    public synchronized int setPrenotazione(int idUtente, int idCorsoDocente, Date data, int ora) {
         try (Connection conn = DriverManager.getConnection(url1, user, password)) {
-            String query = "INSERT INTO Prenotazione (id_utente, id_corso_docente, data, ora, stato) VALUES (?, ?, ?, ?, ?, ?)";
+            String query = "INSERT INTO Prenotazione (id_utente, id_corso_docente, data, ora, stato) VALUES (?, ?, ?, ?, ?)";
             try (PreparedStatement ps = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
                 ps.setInt(1, idUtente);
                 ps.setInt(2, idCorsoDocente);
-                ps.setString(3, data);
+                ps.setDate(3, data);
                 ps.setInt(4, ora);
                 ps.setString(5, "attiva");
                 int rows = ps.executeUpdate();

@@ -6,7 +6,7 @@
     <context-param>
         <description>url del database per accesso da applicazione java</description>
         <param-name>DB-URL</param-name>
-        <param-value>jdbc:mysql://localhost:3306/progetto</param-value>
+        <param-value>jdbc:mysql://localhost:3306/dbripetizioni</param-value>
     </context-param>
     <context-param>
         <description>account per accedere a DB</description>

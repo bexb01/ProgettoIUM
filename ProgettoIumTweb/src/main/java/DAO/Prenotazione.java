@@ -1,15 +1,17 @@
 package DAO;
 
+import java.util.Date;
+
 public class Prenotazione {
     private int id_prenotazione;
     private int id_utente;
     private int id_corso_docente;
-    private String data;
+    private Date data;
     private int ora;
     private String stato;
 
 
-    public Prenotazione(int id_prenotazione, int id_utente, int id_corso_docente, String data, int ora, String stato) {
+    public Prenotazione(int id_prenotazione, int id_utente, int id_corso_docente, Date data, int ora, String stato) {
         this.id_prenotazione = id_prenotazione;
         this.id_utente = id_utente;
         this.id_corso_docente = id_corso_docente;
@@ -30,7 +32,7 @@ public class Prenotazione {
         return id_corso_docente;
     }
 
-    public String getData() {
+    public Date getData() {
         return data;
     }
 
