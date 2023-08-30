@@ -1,7 +1,6 @@
 package com.example.Progetto;
 
 import DAO.Corso;
-import DAO.CorsoDocente;
 import DAO.Docente;
 import DAO.Model;
 import org.json.JSONArray;
@@ -83,17 +82,13 @@ public class CorsoDocenteServlet extends HttpServlet {
             }else if(action.equals("lista docenti corso")){
                 System.out.println(jsonObject);
                 if (jsonObject.has("id_corso")) {
-                    ArrayList<CorsoDocente> listaCorsoDocente = (ArrayList<CorsoDocente>) model.getCorsoDocente(jsonObject.getInt("id_corso"));
+                    ArrayList<Docente> listaCorsoDocente = (ArrayList<Docente>) model.getListaDocentiCorso(jsonObject.getInt("id_corso"));
                     if (listaCorsoDocente != null) {
                         JSONArray jsonArray = new JSONArray();
-                        for (CorsoDocente corsodocente : listaCorsoDocente) {
+                        for (Docente corsodocente : listaCorsoDocente) {
                             JSONObject corsoDocentiJson = new JSONObject();
-                            corsoDocentiJson.put("id_corso_docente", corsodocente.getId_corso());
-                            corsoDocentiJson.put("id_docente", corsodocente.getId_docente());
-                            corsoDocentiJson.put("id_corso", corsodocente.getId_corso());
-                            corsoDocentiJson.put("nome", corsodocente.getNomeDocente());
-                            corsoDocentiJson.put("cognome", corsodocente.getCognomeDocente());
-                            corsoDocentiJson.put("titolo", corsodocente.getTitolo());
+                            corsoDocentiJson.put("nome", corsodocente.getNome());
+                            corsoDocentiJson.put("cognome", corsodocente.getCognome());
                             jsonArray.put(corsoDocentiJson);
                         }
                         r.put("messaggio", "Lista docenti per il corso recuperata con successo");

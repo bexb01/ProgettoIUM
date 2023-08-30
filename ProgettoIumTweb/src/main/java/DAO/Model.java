@@ -211,10 +211,10 @@ public class Model {
         }
     }
 
-    public List getCorsoDocente(int id){
-        List<CorsoDocente> corsiDocenti = new ArrayList<>();
+    public List getListaDocentiCorso(int id){
+        List<Docente> docenti = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(url1, user, password)) {
-            String query = "SELECT cd.id_corso_docente, d.id_docente, c.id_corso, d.nome, d.cognome, c.titolo " +
+            String query = "SELECT  d.id_docente, d.nome, d.cognome " +
                     "FROM Docente d " +
                     "JOIN Corso_Docente cd ON d.id_docente = cd.id_docente " +
                     "JOIN Corso c ON cd.id_corso = c.id_corso " +
@@ -224,18 +224,14 @@ public class Model {
                 ps.setInt(2, id);
                 try (ResultSet rs = ps.executeQuery()) {
                     while (rs.next()) {
-                        int idCorsoDocente = rs.getInt("id_corso_docente");
                         int idDocente = rs.getInt("id_docente");
-                        int idCorso = rs.getInt("id_corso");
                         String nomeDocente = rs.getString("nome");
                         String cognomeDocente = rs.getString("cognome");
-                        String titoloCorso = rs.getString("titolo");
-
-                        CorsoDocente corsoDocente = new CorsoDocente(idCorsoDocente, idDocente, idCorso, nomeDocente, cognomeDocente, titoloCorso);
-                        corsiDocenti.add(corsoDocente);
+                        Docente docente = new Docente(idDocente, nomeDocente, cognomeDocente);
+                        docenti.add(docente);
                     }
                     System.out.println("Lista corsi-docenti restituita con successo.");
-                    return corsiDocenti;
+                    return docenti;
                 }
             }
         } catch (SQLException e) {
@@ -376,16 +372,27 @@ public class Model {
     public List<Prenotazione> getListaPrenotazioni() {
         List<Prenotazione> prenotazioni = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(url1, user, password)) {
-            String query = "SELECT * FROM PRENOTAZIONE";
+            String query = "SELECT p.id_prenotazioni, ud.id_utente, cd.id_corso_docente, " +
+                    "CONCAT(ud.nome, ' ', ud.cognome) AS utente, " +
+                    "CONCAT(d.nome, ' ', d.cognome) AS docente, " +
+                    "c.titolo AS corso, p.data, p.ora, p.stato " +
+                    "FROM prenotazione p " +
+                    "JOIN utente ud ON p.id_utente = ud.id_utente " +
+                    "JOIN corso_docente cd ON p.id_corso_docente = cd.id_corso_docente " +
+                    "JOIN docente d ON cd.id_docente = d.id_docente " +
+                    "JOIN corso c ON cd.id_corso = c.id_corso";
             try (PreparedStatement ps = conn.prepareStatement(query);
                  ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) { //forse cambiare con controllo hasnext()
-                    Prenotazione p = new Prenotazione(rs.getInt("id_prenotazione"),
-                            rs.getInt("id_utente"),
-                            rs.getInt("id_corso_docente"),
-                            rs.getDate("data"),
-                            rs.getInt("ora"),
-                            rs.getString("stato"));
+                    Prenotazione p = new Prenotazione(rs.getInt("id_prenotazioni"),
+                        rs.getInt("id_utente"),
+                        rs.getInt("id_corso_docente"),
+                        rs.getString("utente"),
+                        rs.getString("docente"),
+                        rs.getString("corso"),
+                        rs.getDate("data"),
+                        rs.getInt("ora"),
+                        rs.getString("stato"));
                     prenotazioni.add(p);
                 }
                 System.out.println("Lista prenotazioni recuperata con successo");
@@ -400,7 +407,16 @@ public class Model {
     public List<Prenotazione> getListaPrenotazioniUtente(int idUtente) {     //controllare stato utente oppure no?
         List<Prenotazione> prenotazioni = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(url1, user, password)) {
-            String query = "SELECT * FROM Prenotazione WHERE id_utente = ?";
+            String query = "SELECT p.id_prenotazioni, ud.id_utente, cd.id_corso_docente, " +
+                    "CONCAT(ud.nome, ' ', ud.cognome) AS utente, " +
+                    "CONCAT(d.nome, ' ', d.cognome) AS docente, " +
+                    "c.titolo AS corso, p.data, p.ora, p.stato " +
+                    "FROM prenotazione p " +
+                    "JOIN utente ud ON p.id_utente = ud.id_utente " +
+                    "JOIN corso_docente cd ON p.id_corso_docente = cd.id_corso_docente " +
+                    "JOIN docente d ON cd.id_docente = d.id_docente " +
+                    "JOIN corso c ON cd.id_corso = c.id_corso " +
+                    "WHERE ud.attivo = ? AND p.stato = 'attiva' AND ud.id_utente = ?";
             try (PreparedStatement ps = conn.prepareStatement(query)) {
                 ps.setInt(1, idUtente);
                 ResultSet rs = ps.executeQuery();
@@ -408,6 +424,9 @@ public class Model {
                     Prenotazione prenotazione = new Prenotazione(rs.getInt("id_prenotazioni"),
                             rs.getInt("id_utente"),
                             rs.getInt("id_corso_docente"),
+                            rs.getString("utente"),
+                            rs.getString("docente"),
+                            rs.getString("corso"),
                             rs.getDate("data"),
                             rs.getInt("ora"),
                             rs.getString("stato"));
@@ -425,12 +444,12 @@ public class Model {
     public List<Prenotazione> getListaPrenotazioniDocente(int id){
         List<Prenotazione> prenotazioni = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(url1, user, password)) {
-            String query = "SELECT p.*\n" +
-                    "FROM corso_docente cd\n" +
-                    "JOIN docente d ON cd.id_docente = d.id_docente\n" +
-                    "JOIN corso c ON cd.id_corso = c.id_corso\n" +
-                    "LEFT JOIN prenotazioni p ON cd.id_corso_docente = p.id_corso_docente\n" +
-                    "WHERE d.attivo = ? AND p.stato = 'attiva' AND d.id_docente = ?;";
+            String query = "SELECT p.* " +
+                    "FROM corso_docente cd " +
+                    "JOIN docente d ON cd.id_docente = d.id_docente " +
+                    "JOIN corso c ON cd.id_corso = c.id_corso " +
+                    "LEFT JOIN prenotazioni p ON cd.id_corso_docente = p.id_corso_docente " +
+                    "WHERE d.attivo = ? AND p.stato = 'attiva' AND d.id_docente = ?";
 
             try (PreparedStatement ps = conn.prepareStatement(query)) {
                 ps.setBoolean(1, true);

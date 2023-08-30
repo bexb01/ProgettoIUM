@@ -187,8 +187,12 @@ public class PrenotazioniServlet extends HttpServlet {
             prenotazioneJson.put("id_prenotazione", prenotazione.getId_prenotazione());
             prenotazioneJson.put("id_utente", prenotazione.getId_utente());
             prenotazioneJson.put("id_corso_docente", prenotazione.getId_corso_docente());
+            prenotazioneJson.put("utente", prenotazione.getUtente());
+            prenotazioneJson.put("docente", prenotazione.getUtente());
+            prenotazioneJson.put("corso", prenotazione.getMateria());
             prenotazioneJson.put("data", prenotazione.getData());
             prenotazioneJson.put("ora", prenotazione.getOra());
+            prenotazioneJson.put("stato", prenotazione.getStato());
             jsonArray.put(prenotazioneJson);
         }
         return jsonArray;
