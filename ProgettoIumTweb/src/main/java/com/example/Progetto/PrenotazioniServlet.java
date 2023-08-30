@@ -1,6 +1,5 @@
 package com.example.Progetto;
 
-import DAO.Docente;
 import DAO.Model;
 import DAO.Prenotazione;
 import org.json.JSONArray;
@@ -13,7 +12,6 @@ import javax.servlet.annotation.*;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Date;
 
 @WebServlet(name = "PrenotazioniServlet", value = "/PrenotazioniServlet")
 public class PrenotazioniServlet extends HttpServlet {
@@ -53,8 +51,7 @@ public class PrenotazioniServlet extends HttpServlet {
                         case "prenota": //-->solo cliente
                             System.out.println(jsonObject);
                             if (jsonObject.has("id_utente") && jsonObject.has("id_corso_docente") && jsonObject.has("data") && jsonObject.has("ora")) {
-                                int id_prenotazione = model.setPrenotazione(jsonObject.getInt("id_utente"), jsonObject.getInt("id_corso_docente"),  java.sql.Date.valueOf("2023-08-27") ,jsonObject.getInt("ora"));
-                                //jsonObject.getString("data"),
+                                int id_prenotazione = model.setPrenotazione(jsonObject.getInt("id_utente"), jsonObject.getInt("id_corso_docente"),  java.sql.Date.valueOf("data"),jsonObject.getInt("ora"));
                                 if(id_prenotazione > 0){
                                     r.put("messaggio", "Prenotazione effettuata con successo");
                                 }else{
@@ -87,7 +84,7 @@ public class PrenotazioniServlet extends HttpServlet {
                             if (idUtenteObj instanceof Integer) {
                                 ArrayList<Prenotazione> listaPrenotazioni = (ArrayList<Prenotazione>) model.getListaPrenotazioniUtente((int) s.getAttribute("id_utente"));
                                 if (listaPrenotazioni != null) {
-                                    JSONArray jsonArray = parseArrayToJson(listaPrenotazioni);;
+                                    JSONArray jsonArray = parseArrayToJson(listaPrenotazioni);
                                     r.put("messaggio", "Lista delle prenotazioni recuperata con successo");
                                     r.put("lista prenotazioni", jsonArray);
                                 }else{
@@ -135,11 +132,38 @@ public class PrenotazioniServlet extends HttpServlet {
                         response.setStatus(404);
                         r.put("messaggio", "Parametri della prenotazione mancanti");
                     }
-                }else if(action.equals("ripetizioni disponibili")) {
+                }else if(action.equals("ripetizioni disponibili")) {    //--------------------------------------------------------------------------------
                     System.out.println(jsonObject);
                     //case: ripetizioni disponibili //-->cliente e amministratore
-                    //restituisci lista prenotazioni del docente inviato e lista prenotazioni dell'utente
-                    //frontend renderle non cliccabili
+                    //restituisci lista prenotazioni del docente inviato e
+                    Object idDocenteObj = s.getAttribute("id_docente");
+                    if (idDocenteObj instanceof Integer) {
+                        ArrayList<Prenotazione> listaPrenotazioniDocente = (ArrayList<Prenotazione>) model.getListaPrenotazioniDocente((int) s.getAttribute("id_docente"));
+                        if (listaPrenotazioniDocente != null) {
+                            JSONArray jsonArrayDocente = parseArrayToJson(listaPrenotazioniDocente);
+                            r.put("lista prenotazioni docente", jsonArrayDocente);
+                            //lista prenotazioni dell'utente
+                            Object idUtenteObj = s.getAttribute("id_utente");
+                            if (idUtenteObj instanceof Integer) {
+                                ArrayList<Prenotazione> listaPrenotazioniUtente = (ArrayList<Prenotazione>) model.getListaPrenotazioniUtente((int) s.getAttribute("id_utente"));
+                                if (listaPrenotazioniUtente != null) {
+                                    JSONArray jsonArrayUtente = parseArrayToJson(listaPrenotazioniUtente);
+                                    r.put("messaggio", "Lista delle prenotazioni recuperata con successo");
+                                    r.put("lista prenotazioni utente", jsonArrayUtente);
+                                }else{
+                                    response.setStatus(401);
+                                    r.put("messaggio", "Errore nella richiesta al server");
+                                }
+                            }else {
+                                response.setStatus(404);
+                                r.put("messaggio", "Errore nella sessione utente, attributo id_utente non trovato");
+                            }
+                        }else{
+                            response.setStatus(401);
+                            r.put("messaggio", "Errore nella richiesta della lista delle prenotazioni dell'utente al server");
+                        }
+                    }
+                    //frontend renderle non cliccabili-----------------------------------------------------------------------------------------------------------------------
                 } else {
                     response.setStatus(401);
                     r.put("messaggio", "Non sei autorizzato");

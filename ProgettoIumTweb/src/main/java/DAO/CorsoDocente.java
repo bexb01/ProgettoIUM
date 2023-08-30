@@ -36,6 +36,18 @@ public class CorsoDocente {
         return id_corso;
     }
 
+    public String getNomeDocente() {
+        return nomeDocente;
+    }
+
+    public String getCognomeDocente() {
+        return cognomeDocente;
+    }
+
+    public String getTitolo() {
+        return titoloCorso;
+    }
+
     @Override
     public String toString() {
         return "CorsoDocente{" +

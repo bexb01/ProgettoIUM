@@ -1,6 +1,7 @@
 package com.example.Progetto;
 
 import DAO.Corso;
+import DAO.CorsoDocente;
 import DAO.Docente;
 import DAO.Model;
 import org.json.JSONArray;
@@ -78,6 +79,32 @@ public class CorsoDocenteServlet extends HttpServlet {
                 } else {
                     response.setStatus(401);
                     r.put("messaggio", "Errore nella richiesta della lista corsi al server");
+                }
+            }else if(action.equals("lista corsi docente")){
+                System.out.println(jsonObject);
+                if (jsonObject.has("id_docente")) {
+                    ArrayList<CorsoDocente> listaCorsoDocente = (ArrayList<CorsoDocente>) model.getCorsoDocente(jsonObject.getInt("id_docente"));
+                    if (listaCorsoDocente != null) {
+                        JSONArray jsonArray = new JSONArray();
+                        for (CorsoDocente corsodocente : listaCorsoDocente) {
+                            JSONObject docenteCorsiJson = new JSONObject();
+                            docenteCorsiJson.put("id_corso_docente", corsodocente.getId_corso());
+                            docenteCorsiJson.put("id_docente", corsodocente.getId_docente());
+                            docenteCorsiJson.put("id_corso", corsodocente.getId_corso());
+                            docenteCorsiJson.put("nome", corsodocente.getNomeDocente());
+                            docenteCorsiJson.put("cognome", corsodocente.getCognomeDocente());
+                            docenteCorsiJson.put("titolo", corsodocente.getTitolo());
+                            jsonArray.put(docenteCorsiJson);
+                        }
+                        r.put("messaggio", "Lista corsi per il docente recuperata con successo");
+                        r.put("lista corsi docente", jsonArray);
+                    }else {
+                        response.setStatus(401);
+                        r.put("messaggio", "Errore nella richiesta della lista corsi del docente al server");
+                    }
+                } else {
+                    response.setStatus(404);
+                    r.put("messaggio", "Parametri del docente mancanti");
                 }
             } else if (ruolo != null && ruolo.equals("amministratore")) {
                 switch (action) {

@@ -33,18 +33,34 @@ public class Model {
 
     public synchronized int insertCorso(String corso) {
         try (Connection conn = DriverManager.getConnection(url1, user, password)) {
-            String query = "INSERT INTO CORSO (titolo) VALUES (?)";
-            try (PreparedStatement ps = conn.prepareStatement(query,Statement.RETURN_GENERATED_KEYS)) {
-                ps.setString(1, corso);
-                int rows = ps.executeUpdate();
+            // Prima controlla se il corso è già presente nella tabella
+            String checkQuery = "SELECT id_corso FROM CORSO WHERE titolo = ?";
+            try (PreparedStatement checkPs = conn.prepareStatement(checkQuery)) {
+                checkPs.setString(1, corso);
+                try (ResultSet checkRs = checkPs.executeQuery()) {
+                    if (checkRs.next()) {
+                        int existingCorsoId = checkRs.getInt("id_corso");
+                        // Aggiorna l'attributo attivo a true
+                        String updateQuery = "UPDATE CORSO SET attivo = true WHERE id_corso = ?";
+                        try (PreparedStatement updatePs = conn.prepareStatement(updateQuery)) {
+                            updatePs.setInt(1, existingCorsoId);
+                            updatePs.executeUpdate();
+                            System.out.println("Corso " + corso + " è già presente, l'attributo attivo è stato aggiornato a true");
+                            return existingCorsoId;
+                        }
+                    }
+                }
+            }
+            // Se il corso non è presente, esegui l'inserimento come prima
+            String insertQuery = "INSERT INTO CORSO (titolo) VALUES (?)";
+            try (PreparedStatement insertPs = conn.prepareStatement(insertQuery, Statement.RETURN_GENERATED_KEYS)) {
+                insertPs.setString(1, corso);
+                int rows = insertPs.executeUpdate();
                 if (rows > 0) {
-                    ResultSet rs = ps.getGeneratedKeys();
+                    ResultSet rs = insertPs.getGeneratedKeys();
                     if (rs.next()) {
                         System.out.println("Inserito corso " + corso + " con successo");
                         return (int) rs.getLong(1);
-                    } else {
-                        System.out.println("Errore durante la query per l'inserimento del corso:");
-                        return 0;
                     }
                 }
             }
@@ -144,30 +160,26 @@ public class Model {
         }
     }
 
-
     public synchronized int deleteDocente(int id) {
         try (Connection conn = DriverManager.getConnection(url1, user, password)) {
-            String query = "UPDATE DOCENTE SET attivo = ? WHERE id_docente = ?)";
+            String query = "UPDATE DOCENTE SET attivo = (?) WHERE id_docente = (?)";
             try (PreparedStatement ps = conn.prepareStatement(query)) {
                 ps.setBoolean(1, false);
-                ps.setInt(1, id);
+                ps.setInt(2, id);
                 int rows = ps.executeUpdate();
                 if (rows > 0) {
-                    ResultSet rs = ps.getGeneratedKeys();
-                    if (rs.next()) {
-                        System.out.println("Docente "+ id + " disattivato con successo.");
-                        return id;
-                    } else {
-                        System.out.println("Errore durante la query per la disattivazione del docente.");
-                        return 0;
-                    }
+                    System.out.println("Docente "+ id + " disattivato con successo.");
+                    return id;
+                }
+                else{
+                    System.out.println("Errore durante la query per la disattivazione del docente.");
+                    return 0;
                 }
             }
         } catch (SQLException e) {
             System.out.println("Errore durante la disattivazione del docente: " + e.getMessage());
             return 0;
         }
-        return 0;
     }
 
     public synchronized int insertCorsoDocente(String nomeDocente, String cognomeDocente, String corso){
@@ -199,16 +211,17 @@ public class Model {
         }
     }
 
-    public List getCorsoDocente(){
+    public List getCorsoDocente(int id){
         List<CorsoDocente> corsiDocenti = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(url1, user, password)) {
             String query = "SELECT cd.id_corso_docente, d.id_docente, c.id_corso, d.nome, d.cognome, c.titolo " +
                     "FROM Docente d " +
                     "JOIN Corso_Docente cd ON d.id_docente = cd.id_docente " +
                     "JOIN Corso c ON cd.id_corso = c.id_corso " +
-                    "WHERE d.attivo = ?";
+                    "WHERE d.attivo = ? AND d.id_docente = ?";
             try (PreparedStatement ps = conn.prepareStatement(query)) {
                 ps.setBoolean(1, true);
+                ps.setInt(2, id);
                 try (ResultSet rs = ps.executeQuery()) {
                     while (rs.next()) {
                         int idCorsoDocente = rs.getInt("id_corso_docente");
@@ -392,7 +405,7 @@ public class Model {
                 ps.setInt(1, idUtente);
                 ResultSet rs = ps.executeQuery();
                 while (rs.next()) {
-                    Prenotazione prenotazione = new Prenotazione(rs.getInt("id_prenotazione"),
+                    Prenotazione prenotazione = new Prenotazione(rs.getInt("id_prenotazioni"),
                             rs.getInt("id_utente"),
                             rs.getInt("id_corso_docente"),
                             rs.getDate("data"),
@@ -424,7 +437,7 @@ public class Model {
                 ps.setInt(2, id);
                 try (ResultSet rs = ps.executeQuery()) {
                     while (rs.next()) {
-                        Prenotazione prenotazione = new Prenotazione(rs.getInt("id_prenotazione"),
+                        Prenotazione prenotazione = new Prenotazione(rs.getInt("id_prenotazioni"),
                                 rs.getInt("id_utente"),
                                 rs.getInt("id_corso_docente"),
                                 rs.getDate("data"),
