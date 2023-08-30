@@ -80,31 +80,31 @@ public class CorsoDocenteServlet extends HttpServlet {
                     response.setStatus(401);
                     r.put("messaggio", "Errore nella richiesta della lista corsi al server");
                 }
-            }else if(action.equals("lista corsi docente")){
+            }else if(action.equals("lista docenti corso")){
                 System.out.println(jsonObject);
-                if (jsonObject.has("id_docente")) {
-                    ArrayList<CorsoDocente> listaCorsoDocente = (ArrayList<CorsoDocente>) model.getCorsoDocente(jsonObject.getInt("id_docente"));
+                if (jsonObject.has("id_corso")) {
+                    ArrayList<CorsoDocente> listaCorsoDocente = (ArrayList<CorsoDocente>) model.getCorsoDocente(jsonObject.getInt("id_corso"));
                     if (listaCorsoDocente != null) {
                         JSONArray jsonArray = new JSONArray();
                         for (CorsoDocente corsodocente : listaCorsoDocente) {
-                            JSONObject docenteCorsiJson = new JSONObject();
-                            docenteCorsiJson.put("id_corso_docente", corsodocente.getId_corso());
-                            docenteCorsiJson.put("id_docente", corsodocente.getId_docente());
-                            docenteCorsiJson.put("id_corso", corsodocente.getId_corso());
-                            docenteCorsiJson.put("nome", corsodocente.getNomeDocente());
-                            docenteCorsiJson.put("cognome", corsodocente.getCognomeDocente());
-                            docenteCorsiJson.put("titolo", corsodocente.getTitolo());
-                            jsonArray.put(docenteCorsiJson);
+                            JSONObject corsoDocentiJson = new JSONObject();
+                            corsoDocentiJson.put("id_corso_docente", corsodocente.getId_corso());
+                            corsoDocentiJson.put("id_docente", corsodocente.getId_docente());
+                            corsoDocentiJson.put("id_corso", corsodocente.getId_corso());
+                            corsoDocentiJson.put("nome", corsodocente.getNomeDocente());
+                            corsoDocentiJson.put("cognome", corsodocente.getCognomeDocente());
+                            corsoDocentiJson.put("titolo", corsodocente.getTitolo());
+                            jsonArray.put(corsoDocentiJson);
                         }
-                        r.put("messaggio", "Lista corsi per il docente recuperata con successo");
+                        r.put("messaggio", "Lista docenti per il corso recuperata con successo");
                         r.put("lista corsi docente", jsonArray);
                     }else {
                         response.setStatus(401);
-                        r.put("messaggio", "Errore nella richiesta della lista corsi del docente al server");
+                        r.put("messaggio", "Errore nella richiesta della lista docenti del corso al server");
                     }
                 } else {
                     response.setStatus(404);
-                    r.put("messaggio", "Parametri del docente mancanti");
+                    r.put("messaggio", "Parametri del corso mancanti");
                 }
             } else if (ruolo != null && ruolo.equals("amministratore")) {
                 switch (action) {

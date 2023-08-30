@@ -218,7 +218,7 @@ public class Model {
                     "FROM Docente d " +
                     "JOIN Corso_Docente cd ON d.id_docente = cd.id_docente " +
                     "JOIN Corso c ON cd.id_corso = c.id_corso " +
-                    "WHERE d.attivo = ? AND d.id_docente = ?";
+                    "WHERE d.attivo = ? AND c.id_corso = ?";
             try (PreparedStatement ps = conn.prepareStatement(query)) {
                 ps.setBoolean(1, true);
                 ps.setInt(2, id);
