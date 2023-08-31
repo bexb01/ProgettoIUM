@@ -212,9 +212,9 @@ public class Model {
     }
 
     public List getListaDocentiCorso(int id){
-        List<Docente> docenti = new ArrayList<>();
+        List<CorsoDocente> docenti = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(url1, user, password)) {
-            String query = "SELECT  d.id_docente, d.nome, d.cognome " +
+            String query = "SELECT  cd.id_corso_docente, d.id_docente, c.id_corso, d.nome, d.cognome, c.titolo " +
                     "FROM Docente d " +
                     "JOIN Corso_Docente cd ON d.id_docente = cd.id_docente " +
                     "JOIN Corso c ON cd.id_corso = c.id_corso " +
@@ -224,11 +224,14 @@ public class Model {
                 ps.setInt(2, id);
                 try (ResultSet rs = ps.executeQuery()) {
                     while (rs.next()) {
+                        int idCorsoDocente = rs.getInt("id_corso_docente");
                         int idDocente = rs.getInt("id_docente");
+                        int idCorso = rs.getInt("id_docente");
                         String nomeDocente = rs.getString("nome");
                         String cognomeDocente = rs.getString("cognome");
-                        Docente docente = new Docente(idDocente, nomeDocente, cognomeDocente);
-                        docenti.add(docente);
+                        String titolo = rs.getString("titolo");
+                        CorsoDocente corsoDocente = new CorsoDocente(idCorsoDocente, idDocente, idCorso, nomeDocente, cognomeDocente, titolo);
+                        docenti.add(corsoDocente);
                     }
                     System.out.println("Lista corsi-docenti restituita con successo.");
                     return docenti;
