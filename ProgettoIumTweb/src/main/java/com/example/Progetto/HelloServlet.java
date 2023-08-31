@@ -48,7 +48,11 @@ public class HelloServlet extends HttpServlet {
         model.insertUtente( "Beatrice", "Matera", "materabeatrice@unito.it", "abracadabra");     //amministratore
         model.insertUtente( "Arlo", "Merlo", "acab@unito.it", "brrrriz");    //utente
         model.insertUtente("Mattia","Montanaro","admin@unito.it","abcd");   //amministratore
-        model.insertCorso("Storia");
+        model.setPrenotazione(4,2, java.sql.Date.valueOf("2023-08-27"),15);
+        model.setPrenotazione(4,1, java.sql.Date.valueOf("2023-08-27"),22);
+        model.setPrenotazione(3,5, java.sql.Date.valueOf("2023-08-27"),14);
+        model.setPrenotazione(3,6, java.sql.Date.valueOf("2023-08-27"),15);
+
 
         try (PrintWriter out = response.getWriter()) {
             out.println("<html><body>");

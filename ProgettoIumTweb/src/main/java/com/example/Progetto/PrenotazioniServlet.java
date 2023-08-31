@@ -41,8 +41,11 @@ public class PrenotazioniServlet extends HttpServlet {
         JSONObject jsonObject = JsonUtils.readJson(request);
         String action = jsonObject.getString("action");
         HttpSession s = request.getSession();
-        String ruolo = (String) s.getAttribute("ruolo");
+        //String ruolo = (String) s.getAttribute("ruolo");
+        String ruolo = jsonObject.getString("ruolo");
         JSONObject r = new JSONObject();
+        System.out.println(jsonObject);
+        System.out.println(ruolo + " " + action);
 
         if(ruolo != null && action != null){
             if(!ruolo.equals("guest")){
@@ -63,7 +66,7 @@ public class PrenotazioniServlet extends HttpServlet {
                                 r.put("messaggio", "Parametri della prenotazione mancanti");
                             }
                             break;
-                        case "aggiorna prenotazione":   //-->solo cliente (setta come effettuata)
+                        case "aggiorna_prenotazione":   //-->solo cliente (setta come effettuata)
                             System.out.println(jsonObject);
                             if (jsonObject.has("id_prenotazione")){
                                 int id_prenotazione = model.updatePrenotazione(jsonObject.getInt("id_prenotazione"));
@@ -78,11 +81,13 @@ public class PrenotazioniServlet extends HttpServlet {
                                 r.put("messaggio", "Parametri della prenotazione mancanti");
                             }
                             break;
-                        case "visualizza prenotazioni cliente"://-->solo cliente
+                        case "visualizza_prenotazioni_cliente"://-->solo cliente
                             System.out.println(jsonObject);
-                            Object idUtenteObj = s.getAttribute("id_utente");
+                            //Object idUtenteObj = s.getAttribute("id_utente");
+                            Object idUtenteObj = jsonObject.getInt("id_utente");
                             if (idUtenteObj instanceof Integer) {
-                                ArrayList<Prenotazione> listaPrenotazioni = (ArrayList<Prenotazione>) model.getListaPrenotazioniUtente((int) s.getAttribute("id_utente"));
+                                //ArrayList<Prenotazione> listaPrenotazioni = (ArrayList<Prenotazione>) model.getListaPrenotazioniUtente((int) s.getAttribute("id_utente"));
+                                ArrayList<Prenotazione> listaPrenotazioni = (ArrayList<Prenotazione>) model.getListaPrenotazioniUtente(jsonObject.getInt("id_utente"));
                                 if (listaPrenotazioni != null) {
                                     JSONArray jsonArray = parseArrayToJson(listaPrenotazioni);
                                     r.put("messaggio", "Lista delle prenotazioni recuperata con successo");
@@ -102,7 +107,7 @@ public class PrenotazioniServlet extends HttpServlet {
                             break;
                     }
                 } else if(ruolo.equals("amministratore")){
-                    if(action.equals("visualizza tutte le prenotazioni")){ //-->amministratore
+                    if(action.equals("visualizza_tutte_le_prenotazioni")){ //-->amministratore
                         //-->solo amministratore
                         System.out.println(jsonObject);
                         ArrayList<Prenotazione> listaPrenotazioni = (ArrayList<Prenotazione>) model.getListaPrenotazioni();
@@ -118,8 +123,9 @@ public class PrenotazioniServlet extends HttpServlet {
                         response.setStatus(404);
                         r.put("messaggio", "Errore nella richiesta");
                     }
-                }else if (action.equals("cancella prenotazione")) {   //-->cliente e amministratore
+                }else if (action.equals("cancella_prenotazione")) {   //-->cliente e amministratore
                     System.out.println(jsonObject);
+                    System.out.println(jsonObject.getInt("id_prenotazione"));
                     if (jsonObject.has("id_prenotazione")) {
                         int idPrenotazione = model.deletePrenotazione(jsonObject.getInt("id_prenotazione"));
                         if(idPrenotazione > 0){
@@ -188,7 +194,7 @@ public class PrenotazioniServlet extends HttpServlet {
             prenotazioneJson.put("id_utente", prenotazione.getId_utente());
             prenotazioneJson.put("id_corso_docente", prenotazione.getId_corso_docente());
             prenotazioneJson.put("utente", prenotazione.getUtente());
-            prenotazioneJson.put("docente", prenotazione.getUtente());
+            prenotazioneJson.put("docente", prenotazione.getDocente());
             prenotazioneJson.put("corso", prenotazione.getMateria());
             prenotazioneJson.put("data", prenotazione.getData());
             prenotazioneJson.put("ora", prenotazione.getOra());

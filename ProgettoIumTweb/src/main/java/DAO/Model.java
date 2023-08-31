@@ -418,7 +418,8 @@ public class Model {
                     "JOIN corso c ON cd.id_corso = c.id_corso " +
                     "WHERE ud.attivo = ? AND p.stato = 'attiva' AND ud.id_utente = ?";
             try (PreparedStatement ps = conn.prepareStatement(query)) {
-                ps.setInt(1, idUtente);
+                ps.setBoolean(1, true);
+                ps.setInt(2, idUtente);
                 ResultSet rs = ps.executeQuery();
                 while (rs.next()) {
                     Prenotazione prenotazione = new Prenotazione(rs.getInt("id_prenotazioni"),
@@ -505,7 +506,7 @@ public class Model {
 
     public synchronized int deletePrenotazione(int idPrenotazione) {
         try (Connection conn = DriverManager.getConnection(url1, user, password)) {
-            String query = "UPDATE CORSO SET stato = ? WHERE id_prenotazione = ?";
+            String query = "UPDATE PRENOTAZIONE SET stato = ? WHERE id_prenotazioni = ?";
             try (PreparedStatement ps = conn.prepareStatement(query)) {
                 ps.setString(1, "disdetta");
                 ps.setInt(2, idPrenotazione);
@@ -526,7 +527,7 @@ public class Model {
 
     public synchronized int updatePrenotazione(int idPrenotazione) {
         try (Connection conn = DriverManager.getConnection(url1, user, password)) {
-            String query = "UPDATE CORSO SET stato = ? WHERE id_prenotazione = ?";
+            String query = "UPDATE PRENOTAZIONE SET stato = ? WHERE id_prenotazioni = ?";
             try (PreparedStatement ps = conn.prepareStatement(query)) {
                 ps.setString(1, "effettuata");
                 ps.setInt(2, idPrenotazione);
