@@ -47,7 +47,23 @@ public class CorsoDocenteServlet extends HttpServlet {
         JSONObject r = new JSONObject();
 
         if(action != null) {
-            if (action.equals("lista docenti")) {
+            if (action.equals("get id_corso_docente")) {
+                System.out.println(jsonObject);
+                if (jsonObject.has("id_corso") && jsonObject.has("id_docente")){
+                    int idCorsoDocente = model.getCorsoDocente(jsonObject.getInt("id_corso"),jsonObject.getInt("id_docente"));
+                    System.out.println(idCorsoDocente);
+                    if(idCorsoDocente>0){
+                        r.put("messaggio", "id corso docente recuperato con successo");
+                        r.put("id_corso_docente", idCorsoDocente);
+                    }else {
+                        response.setStatus(401);
+                        r.put("messaggio", "Errore nella richiesta dell'id al server");
+                    }
+                } else {
+                    response.setStatus(401);
+                    r.put("messaggio", "Errore nella richiesta dell'id");
+                }
+            } else if (action.equals("lista docenti")) {
                 ArrayList<Docente> listaDocenti = (ArrayList<Docente>) model.getListaDocenti();
                 if (listaDocenti != null) {
                     JSONArray jsonArray = new JSONArray();

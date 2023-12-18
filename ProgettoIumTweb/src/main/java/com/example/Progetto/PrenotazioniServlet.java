@@ -115,7 +115,7 @@ public class PrenotazioniServlet extends HttpServlet {
                         case "prenota": //-->solo cliente
                             System.out.println(jsonObject);
                             if (jsonObject.has("id_utente") && jsonObject.has("id_corso_docente") && jsonObject.has("data") && jsonObject.has("ora")) {
-                                int id_prenotazione = model.setPrenotazione(jsonObject.getInt("id_utente"), jsonObject.getInt("id_corso_docente"),  java.sql.Date.valueOf("data"),jsonObject.getInt("ora"));
+                                int id_prenotazione = model.setPrenotazione(jsonObject.getInt("id_utente"), jsonObject.getInt("id_corso_docente"),  java.sql.Date.valueOf(jsonObject.getString("data")),jsonObject.getInt("ora"));
                                 if(id_prenotazione > 0){
                                     r.put("messaggio", "Prenotazione effettuata con successo");
                                 }else{
@@ -178,7 +178,7 @@ public class PrenotazioniServlet extends HttpServlet {
                         }
                     }else {
                         response.setStatus(404);
-                        r.put("messaggio", "Errore nella richiesta");
+                        r.put("messaggio", "Errore nella richiesta-1");
                     }
                 }
             }else {

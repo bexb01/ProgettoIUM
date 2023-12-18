@@ -55,8 +55,9 @@ public class HelloServlet extends HttpServlet {
         //model.setPrenotazione(3,6, java.sql.Date.valueOf("2023-08-27"),15);
         //model.setPrenotazione(3,2, java.sql.Date.valueOf("2023-12-27"),14);
         //model.setPrenotazione(3,3, java.sql.Date.valueOf("2023-12-27"),18);
-        ArrayList<Prenotazione> listaPrenotazioniDocente = (ArrayList<Prenotazione>) model.getListaPrenotazioniDocente(4);
-
+        //model.setPrenotazione(3,3, java.sql.Date.valueOf("2023-12-28"),18);
+        ArrayList<Prenotazione> listaPrenotazioniDocente = (ArrayList<Prenotazione>) model.getListaPrenotazioniUtenteData(3,java.sql.Date.valueOf("2023-12-28"));
+        int a = model.getCorsoDocente(5,3);
 
 
         try (PrintWriter out = response.getWriter()) {
@@ -66,6 +67,7 @@ public class HelloServlet extends HttpServlet {
             for (Prenotazione prenotazione : listaPrenotazioniDocente) {
                 out.println("<p> " + prenotazione + "</p> ");
             }
+            out.println("<p> " + a + " </p> ");
             out.println("</body></html>");
         }
     }

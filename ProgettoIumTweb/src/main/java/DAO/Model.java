@@ -75,21 +75,17 @@ public class Model {
         List<Corso> corsi = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(url1, user, password)) {
             String query = "SELECT * FROM CORSO WHERE attivo = ?";
-            System.out.println("1");
             try (PreparedStatement ps = conn.prepareStatement(query)) {
                 ps.setBoolean(1, true);
                 ResultSet rs = ps.executeQuery();
-                System.out.println("2");
                 while (rs.next()) {
                     Corso corso = new Corso(rs.getInt("id_corso"), rs.getString("titolo"));
                     corsi.add(corso);
                 }
-                System.out.println("A");
                 System.out.println("Corsi restituiti con successo.");
                 return corsi;
             }
         } catch (SQLException e) {
-            System.out.println("B");
             System.out.println("Errore durante il recupero della lista corsi: " + e.getMessage());
             return null;
         }
@@ -206,6 +202,32 @@ public class Model {
         }
         return false;
     }
+
+    public synchronized int getCorsoDocente(int idCorso, int idDocente) {
+        try (Connection conn = DriverManager.getConnection(url1, user, password)) {
+            String query = "SELECT id_corso_docente FROM CORSO_DOCENTE " +
+                    "WHERE id_corso = ? AND id_docente = ?";
+            try (PreparedStatement ps = conn.prepareStatement(query)) {
+                ps.setInt(1, idCorso);
+                ps.setInt(2, idDocente);
+
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        int idCorsoDocente = rs.getInt("id_corso_docente");
+                        System.out.println("Codice corso docente trovato: " + idCorsoDocente);
+                        return idCorsoDocente;
+                    } else {
+                        System.out.println("Associazione non trovata, docente o corso non trovato.");
+                        return 0;
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Errore durante la query: " + e.getMessage());
+            return 0;
+        }
+    }
+
 
     public synchronized int insertCorsoDocente(String nomeDocente, String cognomeDocente, String corso){
         try (Connection conn = DriverManager.getConnection(url1, user, password)) {
@@ -470,6 +492,45 @@ public class Model {
         }
     }
 
+    public List<Prenotazione> getListaPrenotazioniUtenteData(int idUtente, Date data) {     //controllare stato utente oppure no?
+        List<Prenotazione> prenotazioni = new ArrayList<>();
+        try (Connection conn = DriverManager.getConnection(url1, user, password)) {
+            String query = "SELECT p.id_prenotazioni, ud.id_utente, cd.id_corso_docente, " +
+                    "CONCAT(ud.nome, ' ', ud.cognome) AS utente, " +
+                    "CONCAT(d.nome, ' ', d.cognome) AS docente, " +
+                    "c.titolo AS corso, p.data, p.ora, p.stato " +
+                    "FROM prenotazione p " +
+                    "JOIN utente ud ON p.id_utente = ud.id_utente " +
+                    "JOIN corso_docente cd ON p.id_corso_docente = cd.id_corso_docente " +
+                    "JOIN docente d ON cd.id_docente = d.id_docente " +
+                    "JOIN corso c ON cd.id_corso = c.id_corso " +
+                    "WHERE ud.attivo = ? AND p.stato = 'attiva' AND ud.id_utente = ? AND p.data = ?";
+            try (PreparedStatement ps = conn.prepareStatement(query)) {
+                ps.setBoolean(1, true);
+                ps.setInt(2, idUtente);
+                ps.setDate(3, data);
+                ResultSet rs = ps.executeQuery();
+                while (rs.next()) {
+                    Prenotazione prenotazione = new Prenotazione(rs.getInt("id_prenotazioni"),
+                            rs.getInt("id_utente"),
+                            rs.getInt("id_corso_docente"),
+                            rs.getString("utente"),
+                            rs.getString("docente"),
+                            rs.getString("corso"),
+                            rs.getDate("data"),
+                            rs.getInt("ora"),
+                            rs.getString("stato"));
+                    prenotazioni.add(prenotazione);
+                }
+                System.out.println("Lista prenotazioni dell'utente nella data specifica recuperata con successo");
+                return prenotazioni;
+            }
+        } catch (SQLException e) {
+            System.out.println("Errore durante il recupero della lista prenotazioni dell'utente: " + e.getMessage());
+            return null;
+        }
+    }
+
     public List<Prenotazione> getListaPrenotazioniDocente(int id){
         List<Prenotazione> prenotazioni = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(url1, user, password)) {
@@ -483,6 +544,40 @@ public class Model {
             try (PreparedStatement ps = conn.prepareStatement(query)) {
                 ps.setBoolean(1, true);
                 ps.setInt(2, id);
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        Prenotazione prenotazione = new Prenotazione(rs.getInt("id_prenotazioni"),
+                                rs.getInt("id_utente"),
+                                rs.getInt("id_corso_docente"),
+                                rs.getDate("data"),
+                                rs.getInt("ora"),
+                                rs.getString("stato"));
+                        prenotazioni.add(prenotazione);
+                    }
+                    System.out.println("Lista prenotazioni del docente recuperata con successo.");
+                    return prenotazioni;
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Errore durante il recupero della lista prenotazioni del docente: " + e.getMessage());
+            return null;
+        }
+    }
+
+    public List<Prenotazione> getListaPrenotazioniDocenteData(int id, Date data){
+        List<Prenotazione> prenotazioni = new ArrayList<>();
+        try (Connection conn = DriverManager.getConnection(url1, user, password)) {
+            String query = "SELECT p.* " +
+                    "FROM corso_docente cd " +
+                    "JOIN docente d ON cd.id_docente = d.id_docente " +
+                    "JOIN corso c ON cd.id_corso = c.id_corso " +
+                    "LEFT JOIN prenotazione p ON cd.id_corso_docente = p.id_corso_docente " +
+                    "WHERE d.attivo = ? AND p.stato = 'attiva' AND d.id_docente = ? AND p.data = ?";
+
+            try (PreparedStatement ps = conn.prepareStatement(query)) {
+                ps.setBoolean(1, true);
+                ps.setInt(2, id);
+                ps.setDate(3, data);
                 try (ResultSet rs = ps.executeQuery()) {
                     while (rs.next()) {
                         Prenotazione prenotazione = new Prenotazione(rs.getInt("id_prenotazioni"),
