@@ -49,6 +49,67 @@ public class PrenotazioniServlet extends HttpServlet {
 
         if(ruolo != null && action != null){
             if(!ruolo.equals("guest")){
+                if (action.equals("cancella prenotazione")) {   //-->cliente e amministratore
+                    System.out.println(jsonObject);
+                    System.out.println(jsonObject.getInt("id_prenotazione"));
+                    if (jsonObject.has("id_prenotazione")) {
+                        int idPrenotazione = model.deletePrenotazione(jsonObject.getInt("id_prenotazione"));
+                        if(idPrenotazione > 0){
+                            r.put("messaggio", "Prenotazione cancellata con successo");
+                        }else{
+                            response.setStatus(401);
+                            r.put("messaggio", "Errore nella rimozione della prenotazione");
+                        }
+                    }else{
+                        response.setStatus(404);
+                        r.put("messaggio", "Parametri della prenotazione mancanti");
+                    }
+                } else if (action.equals("ripetizioni disponibili")) {
+                    System.out.println(jsonObject);
+                    // -->cliente e amministratore
+                    // Restituisci lista prenotazioni del docente inviato e dell'utente e renderle non cliccabili
+                    Object idDocenteObj = jsonObject.getInt("id_docente");
+                    if (idDocenteObj instanceof Integer) {
+                        ArrayList<Prenotazione> listaPrenotazioniDocente = (ArrayList<Prenotazione>) model.getListaPrenotazioniDocente((int) idDocenteObj);
+                        if (listaPrenotazioniDocente != null) {
+                            // Lista prenotazioni dell'utente
+                            Object idUtenteObj = jsonObject.getInt("id_utente");
+                            if (idUtenteObj instanceof Integer) {
+                                ArrayList<Prenotazione> listaPrenotazioniUtente = (ArrayList<Prenotazione>) model.getListaPrenotazioniUtente((int) idUtenteObj);
+                                if (listaPrenotazioniUtente != null) {
+                                    // Combine the lists into a single list
+                                    ArrayList<Prenotazione> combinedList = new ArrayList<>(listaPrenotazioniDocente);
+                                    combinedList.addAll(listaPrenotazioniUtente);
+
+                                    // Convert the combined list to a JSONArray
+                                    JSONArray jsonArrayCombined = parseArrayToJson(combinedList);
+                                    for (Prenotazione prenotazione : listaPrenotazioniDocente) {
+                                        System.out.println("1 " + prenotazione + " --- ");
+                                    }
+                                    for (Prenotazione prenotazione : listaPrenotazioniUtente) {
+                                        System.out.println("2 " + prenotazione + " --- ");
+                                    }
+                                    for (Prenotazione prenotazione : combinedList) {
+                                        System.out.println("3 " + prenotazione + " --- ");
+                                    }
+
+                                    // Add the combined list to the response JSON
+                                    r.put("messaggio", "Lista delle prenotazioni recuperata con successo");
+                                    r.put("lista prenotazioni", jsonArrayCombined);
+                                } else {
+                                    response.setStatus(401);
+                                    r.put("messaggio", "Errore nella richiesta al server");
+                                }
+                            } else {
+                                response.setStatus(404);
+                                r.put("messaggio", "Errore nella sessione utente, attributo id_utente non trovato");
+                            }
+                        } else {
+                            response.setStatus(401);
+                            r.put("messaggio", "Errore nella richiesta della lista delle prenotazioni dell'utente al server");
+                        }
+                    }
+                }
                 if(ruolo.equals("cliente")) {
                     switch (action) {
                         case "prenota": //-->solo cliente
@@ -66,7 +127,7 @@ public class PrenotazioniServlet extends HttpServlet {
                                 r.put("messaggio", "Parametri della prenotazione mancanti");
                             }
                             break;
-                        case "aggiorna_prenotazione":   //-->solo cliente (setta come effettuata)
+                        case "aggiorna prenotazione":   //-->solo cliente (setta come effettuata)
                             System.out.println(jsonObject);
                             if (jsonObject.has("id_prenotazione")){
                                 int id_prenotazione = model.updatePrenotazione(jsonObject.getInt("id_prenotazione"));
@@ -81,7 +142,7 @@ public class PrenotazioniServlet extends HttpServlet {
                                 r.put("messaggio", "Parametri della prenotazione mancanti");
                             }
                             break;
-                        case "visualizza_prenotazioni_cliente"://-->solo cliente
+                        case "visualizza prenotazioni cliente"://-->solo cliente
                             System.out.println(jsonObject);
                             //Object idUtenteObj = s.getAttribute("id_utente");
                             Object idUtenteObj = jsonObject.getInt("id_utente");
@@ -101,13 +162,9 @@ public class PrenotazioniServlet extends HttpServlet {
                                 r.put("messaggio", "Errore nella sessione utente, attributo id_utente non trovato");
                             }
                             break;
-                        default:
-                            response.setStatus(404);
-                            r.put("messaggio", "Errore nella richiesta");
-                            break;
                     }
                 } else if(ruolo.equals("amministratore")){
-                    if(action.equals("visualizza_tutte_le_prenotazioni")){ //-->amministratore
+                    if(action.equals("visualizza tutte le prenotazioni")){ //-->amministratore
                         //-->solo amministratore
                         System.out.println(jsonObject);
                         ArrayList<Prenotazione> listaPrenotazioni = (ArrayList<Prenotazione>) model.getListaPrenotazioni();
@@ -123,56 +180,6 @@ public class PrenotazioniServlet extends HttpServlet {
                         response.setStatus(404);
                         r.put("messaggio", "Errore nella richiesta");
                     }
-                }else if (action.equals("cancella_prenotazione")) {   //-->cliente e amministratore
-                    System.out.println(jsonObject);
-                    System.out.println(jsonObject.getInt("id_prenotazione"));
-                    if (jsonObject.has("id_prenotazione")) {
-                        int idPrenotazione = model.deletePrenotazione(jsonObject.getInt("id_prenotazione"));
-                        if(idPrenotazione > 0){
-                            r.put("messaggio", "Prenotazione cancellata con successo");
-                        }else{
-                            response.setStatus(401);
-                            r.put("messaggio", "Errore nella rimozione della prenotazione");
-                        }
-                    }else{
-                        response.setStatus(404);
-                        r.put("messaggio", "Parametri della prenotazione mancanti");
-                    }
-                }else if(action.equals("ripetizioni disponibili")) {    //--------------------------------------------------------------------------------
-                    System.out.println(jsonObject);
-                    //case: ripetizioni disponibili //-->cliente e amministratore
-                    //restituisci lista prenotazioni del docente inviato e
-                    Object idDocenteObj = s.getAttribute("id_docente");
-                    if (idDocenteObj instanceof Integer) {
-                        ArrayList<Prenotazione> listaPrenotazioniDocente = (ArrayList<Prenotazione>) model.getListaPrenotazioniDocente((int) s.getAttribute("id_docente"));
-                        if (listaPrenotazioniDocente != null) {
-                            JSONArray jsonArrayDocente = parseArrayToJson(listaPrenotazioniDocente);
-                            r.put("lista prenotazioni docente", jsonArrayDocente);
-                            //lista prenotazioni dell'utente
-                            Object idUtenteObj = s.getAttribute("id_utente");
-                            if (idUtenteObj instanceof Integer) {
-                                ArrayList<Prenotazione> listaPrenotazioniUtente = (ArrayList<Prenotazione>) model.getListaPrenotazioniUtente((int) s.getAttribute("id_utente"));
-                                if (listaPrenotazioniUtente != null) {
-                                    JSONArray jsonArrayUtente = parseArrayToJson(listaPrenotazioniUtente);
-                                    r.put("messaggio", "Lista delle prenotazioni recuperata con successo");
-                                    r.put("lista prenotazioni utente", jsonArrayUtente);
-                                }else{
-                                    response.setStatus(401);
-                                    r.put("messaggio", "Errore nella richiesta al server");
-                                }
-                            }else {
-                                response.setStatus(404);
-                                r.put("messaggio", "Errore nella sessione utente, attributo id_utente non trovato");
-                            }
-                        }else{
-                            response.setStatus(401);
-                            r.put("messaggio", "Errore nella richiesta della lista delle prenotazioni dell'utente al server");
-                        }
-                    }
-                    //frontend renderle non cliccabili-----------------------------------------------------------------------------------------------------------------------
-                } else {
-                    response.setStatus(401);
-                    r.put("messaggio", "Non sei autorizzato");
                 }
             }else {
                 response.setStatus(401);

@@ -3,6 +3,7 @@ package com.example.Progetto;
 import DAO.*;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.servlet.*;
@@ -45,19 +46,26 @@ public class HelloServlet extends HttpServlet {
         }
          */
         response.setContentType("text/html");
-        model.insertUtente( "Beatrice", "Matera", "materabeatrice@unito.it", "abracadabra");     //amministratore
-        model.insertUtente( "Arlo", "Merlo", "acab@unito.it", "brrrriz");    //utente
-        model.insertUtente("Mattia","Montanaro","admin@unito.it","abcd");   //amministratore
-        model.setPrenotazione(4,2, java.sql.Date.valueOf("2023-08-27"),15);
-        model.setPrenotazione(4,1, java.sql.Date.valueOf("2023-08-27"),22);
-        model.setPrenotazione(3,5, java.sql.Date.valueOf("2023-08-27"),14);
-        model.setPrenotazione(3,6, java.sql.Date.valueOf("2023-08-27"),15);
+        //model.insertUtente( "Beatrice", "Matera", "materabeatrice@unito.it", "abracadabra");     //amministratore
+        //model.insertUtente( "Arlo", "Merlo", "acab@unito.it", "brrrriz");    //utente
+        //model.insertUtente("Mattia","Montanaro","admin@unito.it","abcd");   //amministratore
+        //model.setPrenotazione(4,2, java.sql.Date.valueOf("2023-08-27"),15);
+        //model.setPrenotazione(4,1, java.sql.Date.valueOf("2023-08-27"),22);
+        //model.setPrenotazione(3,5, java.sql.Date.valueOf("2023-08-27"),14);
+        //model.setPrenotazione(3,6, java.sql.Date.valueOf("2023-08-27"),15);
+        //model.setPrenotazione(3,2, java.sql.Date.valueOf("2023-12-27"),14);
+        //model.setPrenotazione(3,3, java.sql.Date.valueOf("2023-12-27"),18);
+        ArrayList<Prenotazione> listaPrenotazioniDocente = (ArrayList<Prenotazione>) model.getListaPrenotazioniDocente(4);
+
 
 
         try (PrintWriter out = response.getWriter()) {
             out.println("<html><body>");
             out.println("<h1> Risultato </h1>");
             out.println("<p> Upload utenti avvenuto con successo 1</p> ");
+            for (Prenotazione prenotazione : listaPrenotazioniDocente) {
+                out.println("<p> " + prenotazione + "</p> ");
+            }
             out.println("</body></html>");
         }
     }

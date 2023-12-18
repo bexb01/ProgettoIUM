@@ -75,17 +75,21 @@ public class Model {
         List<Corso> corsi = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(url1, user, password)) {
             String query = "SELECT * FROM CORSO WHERE attivo = ?";
+            System.out.println("1");
             try (PreparedStatement ps = conn.prepareStatement(query)) {
                 ps.setBoolean(1, true);
                 ResultSet rs = ps.executeQuery();
+                System.out.println("2");
                 while (rs.next()) {
                     Corso corso = new Corso(rs.getInt("id_corso"), rs.getString("titolo"));
                     corsi.add(corso);
                 }
-                System.out.println("Corsi aggiunti con successo.");
+                System.out.println("A");
+                System.out.println("Corsi restituiti con successo.");
                 return corsi;
             }
         } catch (SQLException e) {
+            System.out.println("B");
             System.out.println("Errore durante il recupero della lista corsi: " + e.getMessage());
             return null;
         }
@@ -180,6 +184,27 @@ public class Model {
             System.out.println("Errore durante la disattivazione del docente: " + e.getMessage());
             return 0;
         }
+    }
+
+    public synchronized boolean corsoDocenteEsiste(String nomeDocente, String cognomeDocente, String corso) {
+        try (Connection conn = DriverManager.getConnection(url1, user, password)) {
+            String query = "SELECT COUNT(*) FROM CORSO_DOCENTE " +
+                    "WHERE id_docente = (SELECT id_docente FROM DOCENTE WHERE nome = ? AND cognome = ?) " +
+                    "AND id_corso = (SELECT id_corso FROM CORSO WHERE titolo = ?)";
+            try (PreparedStatement ps = conn.prepareStatement(query)) {
+                ps.setString(1, nomeDocente);
+                ps.setString(2, cognomeDocente);
+                ps.setString(3, corso);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        return rs.getInt(1) > 0;
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Errore durante la verifica dell'esistenza dell'associazione: " + e.getMessage());
+        }
+        return false;
     }
 
     public synchronized int insertCorsoDocente(String nomeDocente, String cognomeDocente, String corso){
@@ -452,7 +477,7 @@ public class Model {
                     "FROM corso_docente cd " +
                     "JOIN docente d ON cd.id_docente = d.id_docente " +
                     "JOIN corso c ON cd.id_corso = c.id_corso " +
-                    "LEFT JOIN prenotazioni p ON cd.id_corso_docente = p.id_corso_docente " +
+                    "LEFT JOIN prenotazione p ON cd.id_corso_docente = p.id_corso_docente " +
                     "WHERE d.attivo = ? AND p.stato = 'attiva' AND d.id_docente = ?";
 
             try (PreparedStatement ps = conn.prepareStatement(query)) {

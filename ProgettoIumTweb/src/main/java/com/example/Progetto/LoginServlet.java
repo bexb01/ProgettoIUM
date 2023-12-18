@@ -54,6 +54,7 @@ public class LoginServlet extends HttpServlet {
                             s.setAttribute("ruolo", utente.getRuolo());
                             r.put("id_utente", utente.getId_utente());
                             r.put("nome", utente.getNome());
+                            r.put("cognome", utente.getCognome());
                             r.put("ruolo", utente.getRuolo());
                             r.put("messaggio", "Autenticazione avvenuta con successo");
                         } else {

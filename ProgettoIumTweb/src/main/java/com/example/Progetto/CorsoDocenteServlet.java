@@ -71,7 +71,7 @@ public class CorsoDocenteServlet extends HttpServlet {
                     for (Corso corso : listaCorsi) {
                         JSONObject corsoJson = new JSONObject();
                         corsoJson.put("id_corso", corso.getId_corso());
-                        corsoJson.put("nome", corso.getTitolo());
+                        corsoJson.put("titolo", corso.getTitolo());
                         jsonArray.put(corsoJson);
                     }
                     r.put("messaggio", "Lista corsi recuperata con successo");
@@ -171,12 +171,18 @@ public class CorsoDocenteServlet extends HttpServlet {
                     case "insert corso-docente":
                         System.out.println(jsonObject);
                         if (!jsonObject.optString("nome").isEmpty() && !jsonObject.optString("cognome").isEmpty() && !jsonObject.optString("corso").isEmpty()) {
-                            int idCorsoDocente = model.insertCorsoDocente(jsonObject.getString("nome"), jsonObject.getString("cognome"), jsonObject.getString("corso"));
-                            if (idCorsoDocente > 0) {
-                                r.put("messaggio", "Associazione corso-docente inserito con successo");
+                            // Verifica se l'associazione corso-docente esiste già
+                            if (model.corsoDocenteEsiste(jsonObject.getString("nome"), jsonObject.getString("cognome"), jsonObject.getString("corso"))) {
+                                response.setStatus(409); // 409 Conflict - indica un conflitto con la risorsa esistente
+                                r.put("messaggio", "Associazione corso-docente già esistente");
                             } else {
-                                response.setStatus(401);
-                                r.put("messaggio", "Errore nell'inserimento del associazione corso-docente");
+                                int idCorsoDocente = model.insertCorsoDocente(jsonObject.getString("nome"), jsonObject.getString("cognome"), jsonObject.getString("corso"));
+                                if (idCorsoDocente > 0) {
+                                    r.put("messaggio", "Associazione corso-docente inserito con successo");
+                                } else {
+                                    response.setStatus(401);
+                                    r.put("messaggio", "Errore nell'inserimento del associazione corso-docente");
+                                }
                             }
                         } else {
                             response.setStatus(404);
