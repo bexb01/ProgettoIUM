@@ -109,8 +109,7 @@ public class PrenotazioniServlet extends HttpServlet {
                             r.put("messaggio", "Errore nella richiesta della lista delle prenotazioni dell'utente al server");
                         }
                     }
-                }
-                if(ruolo.equals("cliente")) {
+                } else if(ruolo.equals("cliente")) {
                     switch (action) {
                         case "prenota": //-->solo cliente
                             System.out.println(jsonObject);
@@ -145,10 +144,10 @@ public class PrenotazioniServlet extends HttpServlet {
                         case "visualizza prenotazioni cliente"://-->solo cliente
                             System.out.println(jsonObject);
                             //Object idUtenteObj = s.getAttribute("id_utente");
-                            Object idUtenteObj = jsonObject.getInt("id_utente");
-                            if (idUtenteObj instanceof Integer) {
+                            Object idUtenteObj1 = jsonObject.getInt("id_utente");
+                            if (idUtenteObj1 instanceof Integer) {
                                 //ArrayList<Prenotazione> listaPrenotazioni = (ArrayList<Prenotazione>) model.getListaPrenotazioniUtente((int) s.getAttribute("id_utente"));
-                                ArrayList<Prenotazione> listaPrenotazioni = (ArrayList<Prenotazione>) model.getListaPrenotazioniUtente(jsonObject.getInt("id_utente"));
+                                ArrayList<Prenotazione> listaPrenotazioni = (ArrayList<Prenotazione>) model.getListaPrenotazioniUtenteAll(jsonObject.getInt("id_utente"));
                                 if (listaPrenotazioni != null) {
                                     JSONArray jsonArray = parseArrayToJson(listaPrenotazioni);
                                     r.put("messaggio", "Lista delle prenotazioni recuperata con successo");

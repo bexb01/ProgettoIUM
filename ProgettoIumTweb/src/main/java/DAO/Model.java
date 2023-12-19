@@ -492,6 +492,44 @@ public class Model {
         }
     }
 
+    public List<Prenotazione> getListaPrenotazioniUtenteAll(int idUtente) {     //controllare stato utente oppure no?
+        List<Prenotazione> prenotazioni = new ArrayList<>();
+        try (Connection conn = DriverManager.getConnection(url1, user, password)) {
+            String query = "SELECT p.id_prenotazioni, ud.id_utente, cd.id_corso_docente, " +
+                    "CONCAT(ud.nome, ' ', ud.cognome) AS utente, " +
+                    "CONCAT(d.nome, ' ', d.cognome) AS docente, " +
+                    "c.titolo AS corso, p.data, p.ora, p.stato " +
+                    "FROM prenotazione p " +
+                    "JOIN utente ud ON p.id_utente = ud.id_utente " +
+                    "JOIN corso_docente cd ON p.id_corso_docente = cd.id_corso_docente " +
+                    "JOIN docente d ON cd.id_docente = d.id_docente " +
+                    "JOIN corso c ON cd.id_corso = c.id_corso " +
+                    "WHERE ud.attivo = ? AND ud.id_utente = ?";
+            try (PreparedStatement ps = conn.prepareStatement(query)) {
+                ps.setBoolean(1, true);
+                ps.setInt(2, idUtente);
+                ResultSet rs = ps.executeQuery();
+                while (rs.next()) {
+                    Prenotazione prenotazione = new Prenotazione(rs.getInt("id_prenotazioni"),
+                            rs.getInt("id_utente"),
+                            rs.getInt("id_corso_docente"),
+                            rs.getString("utente"),
+                            rs.getString("docente"),
+                            rs.getString("corso"),
+                            rs.getDate("data"),
+                            rs.getInt("ora"),
+                            rs.getString("stato"));
+                    prenotazioni.add(prenotazione);
+                }
+                System.out.println("Lista prenotazioni dell'utente recuperata con successo");
+                return prenotazioni;
+            }
+        } catch (SQLException e) {
+            System.out.println("Errore durante il recupero della lista prenotazioni dell'utente: " + e.getMessage());
+            return null;
+        }
+    }
+
     public List<Prenotazione> getListaPrenotazioniUtenteData(int idUtente, Date data) {     //controllare stato utente oppure no?
         List<Prenotazione> prenotazioni = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(url1, user, password)) {
