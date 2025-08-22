@@ -5,13 +5,22 @@ Applicazione Java Web per la gestione di prenotazioni di ripetizioni online
 ![Java](https://img.shields.io/badge/java-11+-blue?style=flat)  
 ![PostgreSQL](https://img.shields.io/badge/database-PostgreSQL-336791?style=flat&logo=postgresql)  
 ![Tomcat](https://img.shields.io/badge/server-Tomcat-orange?style=flat)  
+![Language](https://img.shields.io/badge/language-JavaScript%20%7C%20HTML%20%7C%20CSS-blue?style=flat)
+![Accessibility](https://img.shields.io/badge/accessibility-WCAG%202.1%20AA-lightgrey?style=flat)
 
----
+## Descrizione
+Questo repository contiene il progetto sviluppato per il corso di **Interazione Uomo-Macchina T-Web (IUMTweb)**.  
+Il progetto è composto da due parti principali:
 
-## Descrizione  
-Questo repository contiene la **parte backend** del progetto di laboratorio **IUM+TWEB (12 CFU)** – Università di Torino, a.a. 2022/23.  
-Il backend è implementato in **Java (Servlet/JSP)** con architettura **MVC** e si occupa della gestione della logica applicativa e dell’accesso al database.  
+1. **Backend**  
+   La cartella `Progetto IUMTweb` contiene l’implementazione lato server del progetto.
 
-Il frontend (SPA in **Vue.js**) è stato sviluppato in una repository separata dal collega di gruppo.  
+2. **Pagina Web di Registrazione**  
+   La cartella `basePagWeb` contiene una pagina web statica (HTML + CSS) sviluppata come parte della consegna.  
+   La pagina è stata realizzata seguendo le **linee guida di accessibilità** discusse a lezione, in particolare le WCAG 2.1 livello AA.
 
----
+## Validazioni
+La pagina web è stata validata con i seguenti strumenti:
+- [W3C HTML Validator](http://validator.w3.org/#validate_by_upload)  
+- [W3C CSS Validator](http://jigsaw.w3.org/css-validator/#validate_by_upload)  
+- [AChecker Accessibility Checker](https://achecker.achecks.ca/checker/index.php)
